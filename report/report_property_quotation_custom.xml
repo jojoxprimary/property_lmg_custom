@@ -1,0 +1,15 @@
+<odoo>
+  <template id="report_saleorder_document_custom" inherit_id="sale.report_saleorder_document">
+    <!-- Target the layout_document_title block -->
+    <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+      <t t-set="layout_document_title">
+        <div style="text-align: center; font-weight: bold; font-size: 20px;">
+          <span t-if="is_proforma">Pro-Forma Invoice # </span>
+          <span t-elif="doc.state in ['draft','sent']">Rent Proposal # </span>
+          <span t-else="">Order # </span>
+          <span t-field="doc.name">SO0000</span>
+        </div>
+      </t>
+    </xpath>
+  </template>
+</odoo>
