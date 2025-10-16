@@ -1,45 +1,57 @@
 <odoo>
-  <record id="view_order_form_inherit_proposal" model="ir.ui.view">
-    <field name="name">sale.order.form.inherit.proposal</field>
-    <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_order_form"/>
-    <field name="arch" type="xml">
+    <!-- Custom form view for Real Estate orders -->
+    <record id="view_order_form_inherit_proposal" model="ir.ui.view">
+        <field name="name">sale.order.form.real.estate.proposal</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="90"/> <!-- Ensures it loads after base sale form -->
+        <field name="arch" type="xml">
 
-      <!-- Hide default header buttons (Email, Confirm, Cancel) when in draft -->
-        <xpath expr="//header//button[@name='action_quotation_send']" position="attributes">
-            <attribute name="invisible">state == 'draft'</attribute>
-        </xpath>
+            <!-- Hide default header buttons (Email, Confirm, Cancel) when in draft -->
+            <xpath expr="//header//button[@name='action_quotation_send']" position="attributes">
+                <attribute name="invisible">
+                    context.get('from_industry_real_estate') and (state == 'draft')
+                </attribute>
+            </xpath>
 
-        <!-- sent -->
-        <xpath expr="(//header//button[@name='action_confirm'])[1]" position="attributes">
-            <attribute name="invisible">state == 'draft'</attribute>
-        </xpath>
-        <!-- draft -->
-        <xpath expr="(//header//button[@name='action_confirm'])[2]" position="attributes">
-            <attribute name="invisible">state == 'draft'</attribute>
-        </xpath>
-    
-        <xpath expr="//header//button[@name='action_cancel']" position="attributes">
-            <attribute name="invisible">state == 'draft'</attribute>
-        </xpath>
+            <!-- Hide default confirm button when in real estate context -->
+            <xpath expr="(//header//button[@name='action_confirm'])[2]" position="attributes">
+                <attribute name="invisible">context.get('from_industry_real_estate')</attribute>
+            </xpath>
 
-      <!-- Add new custom buttons -->
-      <xpath expr="//header" position="inside">
+            <!-- Add new custom button: Submit Proposal -->
+            <xpath expr="//header" position="inside">
+                <button name="action_submit_proposal"
+                        string="Submit to Supervisor"
+                        type="object"
+                        invisible="state != 'draft' or not context.get('from_industry_real_estate')"
+                        class="btn-primary"/>
+            </xpath>
 
-        <!-- Submit Proposal -->
-        <button name="action_submit_proposal"
-                string="Submit to Supervisor"
-                type="object"
-                invisible="state != 'draft'"
-                class="btn-primary"/>
-      </xpath>
+            <!-- Update statusbar for Real Estate view -->
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="widget">statusbar</attribute>
+                <attribute name="statusbar_visible">draft,submit,sent,sale</attribute>
+            </xpath>
 
-      <!-- Update statusbar to show your new workflow -->
-      <xpath expr="//field[@name='state']" position="attributes">
-        <attribute name="widget">statusbar</attribute>
-        <attribute name="statusbar_visible">draft,submit,approved,sent,sale,cancel</attribute>
-      </xpath>
+        </field>
+    </record>
 
-    </field>
-  </record>
+    <!-- Custom action for Real Estate Orders -->
+    <record id="action_rental_contracts" model="ir.actions.act_window">
+        <field name="name">Real Estate Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_order_form_inherit_proposal"/>
+        <field name="context">
+            {'default_is_real_estate': True, 'from_industry_real_estate': True}
+        </field>
+        <field name="domain">[('is_real_estate', '=', True)]</field>
+    </record>
+
+    <!-- Optional: menu item for easy access -->
+    <menuitem id="menu_real_estate_orders"
+              name="Real Estate Orders"
+              parent="sale.menu_sale_order"
+              action="action_rental_contracts"/>
 </odoo>

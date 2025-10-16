@@ -6,7 +6,9 @@ class SaleOrder(models.Model):
     state = fields.Selection(selection_add=[
         ('draft', 'Proposal'),
         ('submit', 'Submitted for Review'),
-        ('approved', 'Approved'),
+        ('sent', 'Quotation Sent'),
+        ('sale', 'Sales Order'),
+        ('cancel', 'Cancelled'),
     ])
 
     def action_submit_proposal(self):
