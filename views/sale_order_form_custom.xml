@@ -7,10 +7,29 @@
         <field name="priority" eval="90"/> <!-- Ensures it loads after base sale form -->
         <field name="arch" type="xml">
 
-            <!-- Hide default header buttons (Email, Confirm, Cancel) when in draft -->
+            <!-- Add new custom button: Submit Proposal -->
+           <xpath expr="//header//button[@name='action_preview_sale_order']" position="before">
+                <button name="action_submit_proposal"
+                        string="Submit to Supervisor"
+                        type="object"
+                        confirm="Are you sure you want to submit this proposal for supervisor review?"
+                        invisible="state != 'proposal' or not context.get('from_industry_real_estate')"
+                        class="btn-primary"/>
+            </xpath>
+          
+          <!-- Add "Mark as Sent" button (visible only after submit) -->
+          <xpath expr="//header//button[@name='action_preview_sale_order']" position="before">
+              <button name="action_submit_to_sent"
+                      string="Approve and Send"
+                      type="object"
+                      invisible="state != 'submit' or not context.get('from_industry_real_estate')"
+                      class="btn-secondary"/>
+          </xpath>
+
+            <!-- Hide default header buttons (Email, Confirm, Cancel) when in propoal -->
             <xpath expr="//header//button[@name='action_quotation_send']" position="attributes">
                 <attribute name="invisible">
-                    context.get('from_industry_real_estate') and (state == 'draft')
+                    context.get('from_industry_real_estate') and (state == 'proposal')
                 </attribute>
             </xpath>
 
@@ -19,21 +38,11 @@
                 <attribute name="invisible">context.get('from_industry_real_estate')</attribute>
             </xpath>
 
-            <!-- Add new custom button: Submit Proposal -->
-            <xpath expr="//header" position="inside">
-                <button name="action_submit_proposal"
-                        string="Submit to Supervisor"
-                        type="object"
-                        invisible="state != 'draft' or not context.get('from_industry_real_estate')"
-                        class="btn-primary"/>
-            </xpath>
-
             <!-- Update statusbar for Real Estate view -->
             <xpath expr="//field[@name='state']" position="attributes">
                 <attribute name="widget">statusbar</attribute>
-                <attribute name="statusbar_visible">draft,submit,sent,sale</attribute>
+                <attribute name="statusbar_visible" >proposal,draft,sent,sale</attribute>
             </xpath>
-
         </field>
     </record>
 
@@ -42,10 +51,7 @@
         <field name="name">Real Estate Orders</field>
         <field name="res_model">sale.order</field>
         <field name="view_mode">list,form</field>
-        <field name="view_id" ref="view_order_form_inherit_proposal"/>
-        <field name="context">
-            {'default_is_real_estate': True, 'from_industry_real_estate': True}
-        </field>
+        <field name="context">{'default_is_real_estate': True, 'from_industry_real_estate': True}</field>
         <field name="domain">[('is_real_estate', '=', True)]</field>
     </record>
 
@@ -53,5 +59,5 @@
     <menuitem id="menu_real_estate_orders"
               name="Real Estate Orders"
               parent="sale.menu_sale_order"
-              action="action_rental_contracts"/>
+              action="property_lmg_custom.action_rental_contracts"/>
 </odoo>
