@@ -16,6 +16,14 @@
                     confirm="Are you sure you want to send this proposal for review?"
                     invisible="substate_name != 'Proposal'"
                 />
+                <!-- Send Proposal Button -->
+                <button
+                    name="action_send_proposal"
+                    string="Send Proposal"
+                    type="object"
+                    class="btn-primary"
+                    invisible="substate_name != 'For Review'"
+                />
                 <!-- Confirm Payment Button -->
                 <button
                     name="action_confirm_payment"
@@ -29,9 +37,13 @@
 
 
             <!-- OVERRIDE DEFAULT BUTTONS  -->
-            <!-- Hide Send by Email Button on Proposal -->
+            <!-- Hide Send by Email Button on Proposal and For Review -->
             <xpath expr="//header/button[@name='action_quotation_send']" position="attributes">
-                <attribute name="invisible">substate_name != 'For Review'</attribute>
+                <attribute name="invisible">state == 'draft'</attribute>
+            </xpath>
+            <!-- action_confirm -->
+            <xpath expr="//header/button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">state == 'draft'</attribute>
             </xpath>
 
             <!-- Payment Attachment Field - to update every succeeding substate-->

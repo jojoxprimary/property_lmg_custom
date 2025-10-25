@@ -23,34 +23,91 @@ class SaleOrder(models.Model):
         if substate:
             self.substate_id = substate.id
 
-    # OVERRIDE QUOTATION SEND TO SET SUBSTATE TO WAITING FOR SIGNATURE
-    def action_quotation_send(self):
-        res = super().action_quotation_send()
+    # SEND PROPOSAL BUTTON/ACTION -> FROM FOR REVIEW TO WAITING FOR SIGNATURE
+    def action_send_proposal(self):
+        """Send proposal email (same as Send by Email) but stay in Quotation and set substate to Waiting for Signature."""
+        self.ensure_one()
+
+        self.filtered(lambda so: so.state in ('draft', 'sent')).order_line._validate_analytic_distribution()
+        lang = self.env.context.get('lang')
+
+        ctx = {
+            'default_model': 'sale.order',
+            'default_res_ids': self.ids,
+            'default_composition_mode': 'comment',
+            'default_email_layout_xmlid': 'mail.mail_notification_layout_with_responsible_signature',
+            'email_notification_allow_footer': True,
+            'proforma': self.env.context.get('proforma', False),
+        }
+
+        if len(self) > 1:
+            ctx['default_composition_mode'] = 'mass_mail'
+        else:
+            ctx.update({
+                'force_email': True,
+                'model_description': self.with_context(lang=lang).type_name,
+            })
+            if not self.env.context.get('hide_default_template'):
+                mail_template = self._find_mail_template()
+                if mail_template:
+                    ctx.update({
+                        'default_template_id': mail_template.id,
+                        'mark_so_as_sent': False,  # Keep state as Quotation, True in enterprise
+                    })
+                if mail_template and mail_template.lang:
+                    lang = mail_template._render_lang(self.ids)[self.id]
+            else:
+                for order in self:
+                    order._portal_ensure_token()
+
         waiting_substate = self.env['base.substate'].search([
             ('name', '=', 'Waiting for Signature'),
-            ('model', '=', 'sale.order'),
+            ('model', '=', 'sale.order')
         ], limit=1)
+        if waiting_substate:
+            self.substate_id = waiting_substate.id
+        else:
+            raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
 
-        for order in self.filtered(lambda o: o.state == 'sent'):
-            if waiting_substate:
-                order.substate_id = waiting_substate.id
-        return res
+        action = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': ctx,
+        }
 
-    # OVERRIDE VALIDATE ORDER TO SET SUBSTATE TO SIGNED WHEN SIGNATURE RECEIVED
+        if (
+            self.env.context.get('check_document_layout')
+            and not self.env.context.get('discard_logo_check')
+            and self.env.is_admin()
+            and not self.env.company.external_report_layout_id
+        ):
+            layout_action = self.env['ir.actions.report']._action_configure_external_report_layout(action)
+            layout_action['context']['dialog_size'] = 'extra-large'
+            return layout_action
+
+        return action
+
+    # FROM WAITING FOR SIGNATURE TO SIGNED ON CUSTOMER SIGNATURE
     def _validate_order(self):
-        """Prevent automatic confirmation when signature received, set substate instead."""
+        """When customer signs, mark substate as 'Signed' but keep in Quotation."""
         for order in self:
-            # find your "Signed" substate
             signed_substate = self.env['base.substate'].search([
                 ('name', '=', 'Signed'),
                 ('model', '=', 'sale.order')
             ], limit=1)
+
             if signed_substate:
                 order.substate_id = signed_substate.id
+                order.message_post(body="✅ Customer signature received. Substate updated to <b>Signed</b>.")
+            else:
+                _logger.warning("Substate 'Signed' not found for sale.order")
 
-            # Keep it under "Quotation Sent"
-            if order.state == 'draft':
-                order.state = 'sent'
+            if order.state != 'draft':
+                order.state = 'draft'
+
     
     # FOR CONFIRM PAYMENT BUTTON/ACTION -> FROM SIGNED TO PAYMENT CONFIRMED
     def action_confirm_payment(self):
