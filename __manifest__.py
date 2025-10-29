@@ -1,15 +1,11 @@
 {
-    'name': 'Property LMG Customization',
+    'name': 'Property LMG Rental Substate Custom',
     'version': '1.0',
-    'summary': 'Custom lease proposal workflow for properties',
-    'description': """
-        - Adds new states to Sale Orders for Lease Proposals
-        - Submit to Supervisor > Approve > Send to Tenant
-    """,
-    'author': 'HomeBrew',
-    'depends': ['sale'],
+    'depends': ['sale_renting', 'base_substate'],
+    'author': 'Homebrew',
+    'category': 'Sales/Rental',
     'data': [
-        'views/sale_order_form_custom.xml',
+        'views/rental_order_view.xml',
     ],
     'installable': True,
     'application': False,
