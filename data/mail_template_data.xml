@@ -1,0 +1,30 @@
+
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_contract" model="mail.template">
+            <field name="name">Contract - Send by Email</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Contract for {{ object.name }}</field>
+            <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello,
+                        <br/><br/>
+                        Please find attached your contract for <strong t-out="object.name or ''">SO00X</strong>.
+                        <br/><br/>
+                        This is your final contract document. No signature is required at this stage.
+                        <br/><br/>
+                        If you have any questions, please let us know.
+                        <br/><br/>
+                        Thank you,
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('sale.action_report_saleorder'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

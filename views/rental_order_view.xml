@@ -31,7 +31,6 @@
                     type="object"
                     class="btn-primary"
                     invisible="substate_name != 'Signed'"
-                    confirm="Are you sure you'd like to confirm payment for this proposal?"
                 />
             </xpath>
 

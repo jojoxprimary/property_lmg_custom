@@ -5,6 +5,7 @@
     'author': 'Homebrew',
     'category': 'Sales/Rental',
     'data': [
+        'data/mail_template_data.xml',  # Add this line
         'views/rental_order_view.xml',
     ],
     'installable': True,

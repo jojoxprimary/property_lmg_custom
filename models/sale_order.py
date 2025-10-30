@@ -61,15 +61,6 @@ class SaleOrder(models.Model):
                 for order in self:
                     order._portal_ensure_token()
 
-        # waiting_substate = self.env['base.substate'].search([
-        #     ('name', '=', 'Waiting for Signature'),
-        #     ('model', '=', 'sale.order')
-        # ], limit=1)
-        # if waiting_substate:
-        #     self.substate_id = waiting_substate.id
-        # else:
-        #     raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
-
         action = {
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
@@ -110,48 +101,84 @@ class SaleOrder(models.Model):
                 order.state = 'draft'
 
     
-    # FOR CONFIRM PAYMENT BUTTON/ACTION -> FROM SIGNED TO PAYMENT CONFIRMED
+    # FOR CONFIRM PAYMENT BUTTON/ACTION
     def action_confirm_payment(self):
-        for order in self:
-            if not order.payment_attachment:
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': 'Missing Attachment',
-                        'message': 'Please upload a payment attachment before confirming payment.',
-                        'sticky': False,
-                        'type': 'warning',
-                    }
+        self.ensure_one()
+        
+        # Validations
+        if not self.payment_attachment:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Missing Attachment',
+                    'message': 'Please upload a payment attachment before confirming payment.',
+                    'sticky': False,
+                    'type': 'warning',
                 }
+            }
 
-            if order.substate_name != 'Signed':
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': 'Invalid State',
-                        'message': "You can only confirm payment when the substate is 'Signed'.",
-                        'sticky': False,
-                        'type': 'danger',
-                    }
+        if self.substate_name != 'Signed':
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Invalid State',
+                    'message': "You can only confirm payment when the substate is 'Signed'.",
+                    'sticky': False,
+                    'type': 'danger',
                 }
-
-            payment_confirmed_substate = self.env['base.substate'].search([
-                ('name', '=', 'Payment Confirmed'),
+            }
+        
+        # Find template
+        contract_template = self.env.ref('property_lmg_custom.mail_template_data', raise_if_not_found=False)
+        
+        if not contract_template:
+            # Fallback: search by name
+            contract_template = self.env['mail.template'].search([
+                ('name', 'ilike', 'contract'),
                 ('model', '=', 'sale.order')
             ], limit=1)
-
-            if not payment_confirmed_substate:
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': 'Substate Missing',
-                        'message': "Couldn't find substate 'Payment Confirmed'.",
-                        'sticky': False,
-                        'type': 'warning',
-                    }
+        
+        # Template check
+        if not contract_template:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Template Missing',
+                    'message': "Contract email template not found. Please create it first.",
+                    'sticky': False,
+                    'type': 'warning',
                 }
-            # update substate to Payment Confirmed
-            order.substate_id = payment_confirmed_substate.id
+            }
+        
+        # Simple context
+        lang = self.env.context.get('lang')
+        
+        ctx = {
+            'default_model': 'sale.order',
+            'default_res_ids': self.ids,
+            'default_composition_mode': 'comment',
+            'default_template_id': contract_template.id,
+            'default_email_layout_xmlid': 'mail.mail_notification_layout_with_responsible_signature',
+            'email_notification_allow_footer': True,
+            'force_email': True,
+            'model_description': self.with_context(lang=lang).type_name,
+            'is_confirm_payment': True,
+            'mark_so_as_sent': True,
+        }
+        
+        # Ensure portal token for signature
+        self._portal_ensure_token()
+        
+        # Return email wizard
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(False, 'form')],
+            'view_id': False,
+            'target': 'new',
+            'context': ctx,
+        }    
