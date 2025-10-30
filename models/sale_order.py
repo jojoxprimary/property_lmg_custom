@@ -23,7 +23,7 @@ class SaleOrder(models.Model):
         if substate:
             self.substate_id = substate.id
 
-    # SEND PROPOSAL BUTTON/ACTION -> FROM FOR REVIEW TO WAITING FOR SIGNATURE
+    # SEND PROPOSAL BUTTON/ACTION -> SUBSTATE FROM FOR REVIEW TO WAITING FOR SIGNATURE
     def action_send_proposal(self):
         """Send proposal email (same as Send by Email) but stay in Quotation and set substate to Waiting for Signature."""
         self.ensure_one()
@@ -38,6 +38,7 @@ class SaleOrder(models.Model):
             'default_email_layout_xmlid': 'mail.mail_notification_layout_with_responsible_signature',
             'email_notification_allow_footer': True,
             'proforma': self.env.context.get('proforma', False),
+            'is_send_proposal': True,
         }
 
         if len(self) > 1:
@@ -60,14 +61,14 @@ class SaleOrder(models.Model):
                 for order in self:
                     order._portal_ensure_token()
 
-        waiting_substate = self.env['base.substate'].search([
-            ('name', '=', 'Waiting for Signature'),
-            ('model', '=', 'sale.order')
-        ], limit=1)
-        if waiting_substate:
-            self.substate_id = waiting_substate.id
-        else:
-            raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
+        # waiting_substate = self.env['base.substate'].search([
+        #     ('name', '=', 'Waiting for Signature'),
+        #     ('model', '=', 'sale.order')
+        # ], limit=1)
+        # if waiting_substate:
+        #     self.substate_id = waiting_substate.id
+        # else:
+        #     raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
 
         action = {
             'type': 'ir.actions.act_window',
