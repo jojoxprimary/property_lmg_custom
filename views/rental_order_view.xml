@@ -31,6 +31,7 @@
                     type="object"
                     class="btn-primary"
                     invisible="substate_name != 'Signed'"
+                    confirm="Confirming a payment will send a contract email to the customer. Are you sure you want to proceed?"
                 />
             </xpath>
 

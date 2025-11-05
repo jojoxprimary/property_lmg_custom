@@ -12,9 +12,9 @@
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Hello,
                         <br/><br/>
-                        Please find attached your contract for <strong t-out="object.name or ''">SO00X</strong>.
+                        Please find attached contract for <strong t-out="object.name or ''">SO00X</strong>.
                         <br/><br/>
-                        This is your final contract document. No signature is required at this stage.
+                        This is your final contract document.
                         <br/><br/>
                         If you have any questions, please let us know.
                         <br/><br/>

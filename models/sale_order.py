@@ -93,7 +93,7 @@ class SaleOrder(models.Model):
 
             if signed_substate:
                 order.substate_id = signed_substate.id
-                order.message_post(body="✅ Customer signature received. Substate updated to <b>Signed</b>.")
+                order.message_post(body="Customer signature received. Substate updated to <b>Signed</b>.")
             else:
                 _logger.warning("Substate 'Signed' not found for sale.order")
 
