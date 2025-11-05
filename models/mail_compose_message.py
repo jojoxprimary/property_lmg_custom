@@ -16,14 +16,13 @@ class MailComposer(models.TransientModel):
             
             if sale_order_ids:
                 sale_orders = self.env['sale.order'].browse(sale_order_ids)
-                
-                waiting_substate = self.env['base.substate'].search([
-                    ('name', '=', 'Waiting for Signature'),
+                proposal_sent_substate = self.env['base.substate'].search([
+                    ('name', '=', 'Proposal Sent'),
                     ('model', '=', 'sale.order')
                 ], limit=1)
                 
-                if waiting_substate:
-                    sale_orders.write({'substate_id': waiting_substate.id})
+                if proposal_sent_substate:
+                    sale_orders.write({'substate_id': proposal_sent_substate.id})
                 else:
                     raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
         

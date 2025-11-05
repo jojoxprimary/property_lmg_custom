@@ -23,6 +23,7 @@
                     type="object"
                     class="btn-primary"
                     invisible="substate_name != 'For Review'"
+                    confirm="Are you sure you want to approve and send this proposal?"
                 />
                 <!-- Confirm Payment Button -->
                 <button
@@ -30,20 +31,31 @@
                     string="Confirm Payment"
                     type="object"
                     class="btn-primary"
-                    invisible="substate_name != 'Signed'"
-                    confirm="Confirming a payment will send a contract email to the customer. Are you sure you want to proceed?"
+                    invisible="substate_name != 'Proposal Signed'"
+                    confirm="Confirming a payment will send a Rent Agreement email to the customer. Are you sure you want to proceed?"
                 />
             </xpath>
 
 
             <!-- OVERRIDE DEFAULT BUTTONS  -->
-            <!-- Hide Send by Email Button on Proposal and For Review -->
-            <xpath expr="//header/button[@name='action_quotation_send']" position="attributes">
-                <attribute name="invisible">state == 'draft'</attribute>
+            <!-- Hide Send by Email Button (Primary - in draft state) -->
+            <xpath expr="//header/button[@id='send_by_email_primary']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
-            <!-- action_confirm -->
-            <xpath expr="//header/button[@name='action_confirm']" position="attributes">
-                <attribute name="invisible">state == 'draft'</attribute>
+
+            <!-- Hide Send by Email Button (Secondary - in sent/sale state) -->
+            <xpath expr="//header/button[@id='send_by_email']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- CUSTOM PILL BADGES -->
+            <!-- Custom Pill Badge for Proposal Sent -->
+            <xpath expr="//div[@name='button_box']" position="after">
+                <div name="waiting_signature_pill" 
+                     class="float-end badge rounded-pill fw-bold text-bg-info"
+                     invisible="state != 'draft' or substate_name != 'Proposal Sent'">
+                    Waiting for Client Signature
+                </div>
             </xpath>
 
             <!-- Payment Attachment Field - to update every succeeding substate-->
@@ -51,11 +63,26 @@
                 <group
                     name="payment_attachment_group"
                     string="Payment Details"
-                    invisible="not (substate_name in ['Signed', 'Payment Confirmed'])">
+                    invisible="not (substate_name in ['Proposal Signed', 'Payment Confirmed', 'Rental Agreement Sent', 'Rental Agreement Signed'])">
                     <field name="payment_attachment" filename="payment_attachment_filename"/>
                 </group>
             </xpath>
 
+        </field>
+    </record>
+
+    <!-- Separate record to override subscription quotation pill -->
+    <record id="view_subscription_quotation_pill_override" model="ir.ui.view">
+        <field name="name">subscription.quotation.pill.override</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_subscription.sale_subscription_order_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='subscription_quotation_pill']" position="replace">
+                <div name="subscription_quotation_pill" class="float-end badge rounded-pill fw-bold text-bg-info"
+                     invisible="subscription_state != '1_draft' or state not in ['draft', 'sent'] or substate_name != 'Rental Agreement Sent'">
+                    Waiting for Client Signature
+                </div>
+            </xpath>
         </field>
     </record>
 </odoo>

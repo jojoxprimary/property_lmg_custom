@@ -5,7 +5,7 @@ class SaleOrder(models.Model):
 
     substate_id = fields.Many2one('base.substate', string="Substate")
     substate_name = fields.Char(string="Substate Name", compute="_compute_substate_name", store=False)
-    payment_attachment = fields.Binary(string="Payment Attachment")
+    payment_attachment = fields.Binary(string="Proposal Payment Attachment")
 
     # TO GET SUBSTATE NAME FOR VIEW PURPOSES
     @api.depends('substate_id')
@@ -86,16 +86,16 @@ class SaleOrder(models.Model):
     def _validate_order(self):
         """When customer signs, mark substate as 'Signed' but keep in Quotation."""
         for order in self:
-            signed_substate = self.env['base.substate'].search([
-                ('name', '=', 'Signed'),
+            proposal_signed_substate = self.env['base.substate'].search([
+                ('name', '=', 'Proposal Signed'),
                 ('model', '=', 'sale.order')
             ], limit=1)
 
-            if signed_substate:
-                order.substate_id = signed_substate.id
-                order.message_post(body="Customer signature received. Substate updated to <b>Signed</b>.")
+            if proposal_signed_substate:
+                order.substate_id = proposal_signed_substate.id
+                order.message_post(body="Customer signature received. Substate updated to <b>Proposal Signed</b>.")
             else:
-                _logger.warning("Substate 'Signed' not found for sale.order")
+                _logger.warning("Substate 'Proposal Signed' not found for sale.order")
 
             if order.state != 'draft':
                 order.state = 'draft'
@@ -118,36 +118,36 @@ class SaleOrder(models.Model):
                 }
             }
 
-        if self.substate_name != 'Signed':
+        if self.substate_name != 'Proposal Signed':
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
                     'title': 'Invalid State',
-                    'message': "You can only confirm payment when the substate is 'Signed'.",
+                    'message': "You can only confirm payment when the substate is 'Proposal Signed'.",
                     'sticky': False,
                     'type': 'danger',
                 }
             }
         
         # Find template
-        contract_template = self.env.ref('property_lmg_custom.mail_template_data', raise_if_not_found=False)
-        
-        if not contract_template:
+        rental_agreement_template = self.env.ref('property_lmg_custom.mail_template_data', raise_if_not_found=False)
+
+        if not rental_agreement_template:
             # Fallback: search by name
-            contract_template = self.env['mail.template'].search([
-                ('name', 'ilike', 'contract'),
+            rental_agreement_template = self.env['mail.template'].search([
+                ('name', 'ilike', 'rent agreement'),
                 ('model', '=', 'sale.order')
             ], limit=1)
         
         # Template check
-        if not contract_template:
+        if not rental_agreement_template:
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
                     'title': 'Template Missing',
-                    'message': "Contract email template not found. Please create it first.",
+                    'message': "Rental agreement email template not found. Please create it first.",
                     'sticky': False,
                     'type': 'warning',
                 }
@@ -160,7 +160,7 @@ class SaleOrder(models.Model):
             'default_model': 'sale.order',
             'default_res_ids': self.ids,
             'default_composition_mode': 'comment',
-            'default_template_id': contract_template.id,
+            'default_template_id': rental_agreement_template.id,
             'default_email_layout_xmlid': 'mail.mail_notification_layout_with_responsible_signature',
             'email_notification_allow_footer': True,
             'force_email': True,
