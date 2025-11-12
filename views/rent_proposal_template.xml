@@ -69,33 +69,33 @@
                         </div>
 
                         <!-- INFO -->
-                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
                             Rent Details
                         </h5>
 
-                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
 
                             <tbody> 
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">         
                                     <td style="width: 30%;padding: 5px;">
-                                        <span style="font-size: 15px; color: #494949ff;">Building Name</span>
+                                        <span style="color: #494949ff;">Building Name</span>
                                     </td>
                                     <td style="padding: 5px;">
-                                         <span t-field="building_line.product_id.categ_id.name" style="font-size: 15px;"/>
+                                         <span t-field="building_line.product_id.categ_id.name" style="font-size: 12px;"/>
                                     </td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">                                 
                                     <td style="width: 30%;padding: 5px;">
-                                        <span style="font-size: 15px; color: #494949ff;">Unit Number</span>
+                                        <span style="color: #494949ff;">Unit Number</span>
                                     </td>
                                     <td style="padding: 5px;">
-                                        <span t-field="building_line.product_id.name" style="font-size: 15px;"/>
+                                        <span t-field="building_line.product_id.name" style="font-size: 12px;"/>
                                     </td>
                                 </tr>
                                 
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
                                     <td style="width: 30%;padding: 5px;">
-                                        <span style="font-size: 15px; color: #494949ff;">Move-in/Move-out Date</span>
+                                        <span style="color: #494949ff;">Move-in/Move-out Date</span>
                                     </td>
                                     <td style="padding: 5px;">
                                         <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
@@ -105,10 +105,10 @@
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
                                     <td style="width: 30%;padding: 5px;">
-                                        <span style="font-size: 15px; color: #494949ff;">Rent Term</span>
+                                        <span style="color: #494949ff;">Rent Term</span>
                                     </td>
                                     <td style="padding: 5px;">
-                                       <span t-esc="round(doc.duration_days / 30, 1)" style="font-size: 15px;"/> month(s)
+                                       <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
                                     </td>
                                 </tr>
 
@@ -117,12 +117,12 @@
                                     <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
                                         <tr style="border-bottom: 1px solid #e6dee4ff;">
                                             <td style="width: 30%; padding: 5px;">
-                                                <span style="font-size: 15px; color: #494949ff;">
+                                                <span style="font-size: 12px; color: #494949ff;">
                                                     <span t-field="attr_value.attribute_id.name"/>
                                                 </span>
                                             </td>
                                             <td style="padding: 5px;">
-                                                <span style="font-size: 15px;">
+                                                <span style="font-size: 12px;">
                                                     <span t-field="attr_value.name"/>
                                                 </span>
                                             </td>
@@ -132,7 +132,7 @@
 
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
                                     <td style="width: 30%; padding: 5px;">
-                                        <span style="font-size: 15px; color: #494949ff;">Requirements Before Move-in</span>
+                                        <span style="font-size: 12px; color: #494949ff;">Requirements Before Move-in</span>
                                     </td>
                                     <td style="padding: 5px;">
                                         <span>Full payment of security deposit(s) and advance rental(s)</span><br/>
@@ -153,13 +153,12 @@
 
                             <tbody>
                                 <t t-foreach="doc.order_line" t-as="line">
-                                    <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                       
+                                    <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
                                         <td style="width: 30%;padding: 5px;">
-                                            <span t-field="line.name" style="font-size: 15px; color: #494949ff;"/>
+                                            <span t-field="line.name" style="color: #494949ff;"/>
                                         </td>
                                         <td style="padding: 5px; text-align: right;">
-                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="font-size: 15px;"/>
+                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' />
                                         </td>
                                     </tr>
                                 </t>
@@ -171,31 +170,29 @@
                         <div class="row justify-content-end mt-4">
                             <div class="col-5">
                                 <table class="table table-sm">
-                                    <tr>
+                                    <tr style="font-size: 12px;">
                                         <td style="padding: 4px;"><strong>Subtotal:</strong></td>
                                         <td class="text-end" style="padding: 4px;">
                                             <span t-field="doc.amount_untaxed" 
                                                   t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr style="font-size: 12px;">
                                         <td style="padding: 4px;"><strong>Taxes:</strong></td>
                                         <td class="text-end" style="padding: 4px;">
                                             <span t-field="doc.amount_tax" 
                                                   t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                         </td>
                                     </tr>
-                                    <tr style="border-top: 2px solid #875A7B; background-color: #f8f9fa;">
+                                    <tr style="font-size: 15px;">
                                         <td style="padding: 6px;">
-                                            <h5 style="margin: 0; color: #875A7B;"><strong>Total:</strong></h5>
+                                            <span style="margin: 0; color: #875A7B;">Total:</span>
                                         </td>
                                         <td class="text-end" style="padding: 5px;">
-                                            <h5 style="margin: 0; color: #875A7B;">
-                                                <strong style="font-size: 18px;">
-                                                    <span t-field="doc.amount_total" 
-                                                        t-options='{"": "monetary", "display_currency": doc.currency_id}'/>
-                                                </strong>
-                                            </h5>
+                                            <span style="margin: 0; color: #875A7B;">
+                                                <span t-field="doc.amount_total" 
+                                                    t-options='{"": "monetary", "display_currency": doc.currency_id}'/>
+                                            </span>
                                         </td>
                                     </tr>
                                 </table>
