@@ -5,7 +5,9 @@
     'author': 'Homebrew',
     'category': 'Sales/Rental',
     'data': [
-        'data/mail_template_data.xml',  # Add this line
+        'data/mail_template_data.xml',  
+        'data/mail_template_rent_proposal.xml',  
+        'views/rent_proposal_template.xml',
         'views/rental_order_view.xml',
     ],
     'installable': True,

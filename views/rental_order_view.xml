@@ -5,6 +5,17 @@
         <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
         <field name="arch" type="xml">
 
+            <!-- DEBUG INFO BLOCK -->
+            <!-- <xpath expr="//sheet" position="before">
+                <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
+                    <strong>Debug Info:</strong>
+                    <ul>
+                        <li>Is Rental Order: <field name="is_rental_order" readonly="1"/></li>
+                        <li>Substate: <field name="substate_name" readonly="1"/></li>
+                    </ul>
+                </div>
+            </xpath> -->
+
             <!-- CUSTOMIZED BUTTONS -->
             <xpath expr="//header/*[1]" position="before">
                 <!-- Submit for Review Button -->
@@ -58,6 +69,7 @@
                 </div>
             </xpath>
 
+            <!-- CUSTOM FIELDS -->
             <!-- Payment Attachment Field - to update every succeeding substate-->
             <xpath expr="//sheet/notebook" position="before">
                 <group
@@ -82,6 +94,21 @@
                      invisible="subscription_state != '1_draft' or state not in ['draft', 'sent'] or substate_name != 'Rental Agreement Sent'">
                     Waiting for Client Signature
                 </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- SUBSTATE TO SHOW ONLY IN RENTAL ORDER VIEW  -->
+    <record id="view_order_form_hide_substate_sales" model="ir.ui.view">
+        <field name="name">sale.order.form.hide.substate.sales</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='substate_id']" position="attributes">
+                <attribute name="invisible">not is_rental_order</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="is_rental_order" invisible="1"/>
             </xpath>
         </field>
     </record>

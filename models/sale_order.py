@@ -7,6 +7,18 @@ class SaleOrder(models.Model):
     substate_name = fields.Char(string="Substate Name", compute="_compute_substate_name", store=False)
     payment_attachment = fields.Binary(string="Proposal Payment Attachment")
 
+    is_rental_order = fields.Boolean(
+        string="Is Rental Order",
+        compute="_compute_is_rental_order",
+        store=True
+    )
+
+    # OPTION: IS RENTAL ORDER
+    @api.depends('order_line', 'order_line.is_rental')
+    def _compute_is_rental_order(self):
+        for order in self:
+            order.is_rental_order = any(line.is_rental for line in order.order_line if hasattr(line, 'is_rental'))
+
     # TO GET SUBSTATE NAME FOR VIEW PURPOSES
     @api.depends('substate_id')
     def _compute_substate_name(self):
@@ -23,13 +35,24 @@ class SaleOrder(models.Model):
         if substate:
             self.substate_id = substate.id
 
-    # SEND PROPOSAL BUTTON/ACTION -> SUBSTATE FROM FOR REVIEW TO WAITING FOR SIGNATURE
+    # SEND PROPOSAL BUTTON/ACTION -> SUBSTATE FROM FOR REVIEW TO PROPOSAL SENT
     def action_send_proposal(self):
-        """Send proposal email (same as Send by Email) but stay in Quotation and set substate to Waiting for Signature."""
+        """Send proposal email with custom rental proposal template."""
         self.ensure_one()
 
         self.filtered(lambda so: so.state in ('draft', 'sent')).order_line._validate_analytic_distribution()
         lang = self.env.context.get('lang')
+
+        # GET CUSTOM TEMPLATE
+        custom_template = self.env.ref('property_lmg_custom.mail_template_rental_proposal', raise_if_not_found=False)
+        if not custom_template:
+            custom_template = self.env['mail.template'].search([
+                ('name', 'ilike', 'rental proposal'),
+                ('model', '=', 'sale.order')
+            ], limit=1)
+        
+        # Use custom or fallback to default
+        mail_template = custom_template or self._find_mail_template()
 
         ctx = {
             'default_model': 'sale.order',
@@ -39,27 +62,19 @@ class SaleOrder(models.Model):
             'email_notification_allow_footer': True,
             'proforma': self.env.context.get('proforma', False),
             'is_send_proposal': True,
+            'force_email': True,
+            'model_description': self.with_context(lang=lang).type_name,
+            'mark_so_as_sent': False,
         }
 
-        if len(self) > 1:
-            ctx['default_composition_mode'] = 'mass_mail'
-        else:
-            ctx.update({
-                'force_email': True,
-                'model_description': self.with_context(lang=lang).type_name,
-            })
-            if not self.env.context.get('hide_default_template'):
-                mail_template = self._find_mail_template()
-                if mail_template:
-                    ctx.update({
-                        'default_template_id': mail_template.id,
-                        'mark_so_as_sent': False,  # Keep state as Quotation, True in enterprise
-                    })
-                if mail_template and mail_template.lang:
-                    lang = mail_template._render_lang(self.ids)[self.id]
-            else:
-                for order in self:
-                    order._portal_ensure_token()
+        # Set template if found
+        if mail_template:
+            ctx['default_template_id'] = mail_template.id
+            if mail_template.lang:
+                lang = mail_template._render_lang(self.ids)[self.id]
+        
+        # Ensure portal token
+        self._portal_ensure_token()
 
         action = {
             'type': 'ir.actions.act_window',
@@ -82,7 +97,7 @@ class SaleOrder(models.Model):
 
         return action
 
-    # FROM WAITING FOR SIGNATURE TO SIGNED ON CUSTOMER SIGNATURE
+    # FROM PROPOSAL SENT TO PROPOSAL SIGNED WHEN CUSTOMER SIGNS
     def _validate_order(self):
         """When customer signs, mark substate as 'Signed' but keep in Quotation."""
         for order in self:

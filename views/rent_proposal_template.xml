@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define new report action for Rental Quotation -->
+    <record id="action_report_rental_quotation" model="ir.actions.report">
+        <field name="name">Rental Quotation</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property_lmg_custom.report_rental_quotation_document</field>
+        <field name="report_file">property_lmg_custom.report_rental_quotation_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <!-- Main Report Template -->
+    <template id="report_rental_quotation_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h5 style="text-align: center; font-weight: bold;">
+                        RENT PROPOSAL
+                        </h5>
+                        <t t-set="building_line" t-value="doc.order_line.filtered(lambda l: 'Building' in (l.product_id.categ_id.complete_name or ''))[:1]"/>
+                        <!-- CUSTOMER & ORDER INFO -->
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                    Customer Information
+                                </h5>
+                                <div t-field="doc.partner_id" 
+                                     t-options='{"widget": "contact", "fields": ["address", "name", "phone", "email"], "no_marker": True}'/>
+                            </div>
+                            <div class="col-6">
+                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                    Sales Information
+                                </h5>
+                                <table class="table table-sm table-borderless" style="font-size: 12px;">
+                                    <tr>
+                                        <td style="width: 35%;"><strong>Date:</strong></td>
+                                        <td><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Salesperson:</strong></td>
+                                        <td><span t-field="doc.user_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                    <td><strong>Address:</strong></td>
+                                        <td>
+                                            <!-- Option 1: Simple address display -->
+                                            <span t-field="doc.company_id.street"/><br/>
+                                            <span t-if="doc.company_id.street2" t-field="doc.company_id.street2"/><br t-if="doc.company_id.street2"/>
+                                            <span t-field="doc.company_id.city"/>, 
+                                            <span t-field="doc.company_id.state_id.name"/> 
+                                            <span t-field="doc.company_id.zip"/><br/>
+                                            <span t-field="doc.company_id.country_id.name"/>
+                                        </td>
+                                    </tr>
+                                     <tr t-if="doc.user_id.mobile">
+                                        <td><strong>Phone:</strong></td>
+                                        <td><span t-field="doc.user_id.mobile"/></td>
+                                    </tr>
+                                     <tr t-if="doc.user_id.email">
+                                        <td><strong>Email:</strong></td>
+                                        <td><span t-field="doc.user_id.email"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- INFO -->
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
+                            Rent Details
+                        </h5>
+
+                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+
+                            <tbody> 
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">         
+                                    <td style="width: 30%;padding: 5px;">
+                                        <span style="font-size: 15px; color: #494949ff;">Building Name</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                         <span t-field="building_line.product_id.categ_id.name" style="font-size: 15px;"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">                                 
+                                    <td style="width: 30%;padding: 5px;">
+                                        <span style="font-size: 15px; color: #494949ff;">Unit Number</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-field="building_line.product_id.name" style="font-size: 15px;"/>
+                                    </td>
+                                </tr>
+                                
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%;padding: 5px;">
+                                        <span style="font-size: 15px; color: #494949ff;">Move-in/Move-out Date</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
+                                        to
+                                        <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%;padding: 5px;">
+                                        <span style="font-size: 15px; color: #494949ff;">Rent Term</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                       <span t-esc="round(doc.duration_days / 30, 1)" style="font-size: 15px;"/> month(s)
+                                    </td>
+                                </tr>
+
+                                <!-- Loop through product attributes -->
+                                <t t-if="building_line and building_line.product_id">
+                                    <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="width: 30%; padding: 5px;">
+                                                <span style="font-size: 15px; color: #494949ff;">
+                                                    <span t-field="attr_value.attribute_id.name"/>
+                                                </span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span style="font-size: 15px;">
+                                                    <span t-field="attr_value.name"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="font-size: 15px; color: #494949ff;">Requirements Before Move-in</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span>Full payment of security deposit(s) and advance rental(s)</span><br/>
+                                        <span>Signed contract of rent</span><br/>
+                                        <span>Valid ID, and/or copy of passport</span><br/>
+                                        <span>Medical certificate and swab/PCR test with negative result</span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <!-- RENTAL ITEMS TABLE -->
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
+                            Rent Rate
+                        </h5>
+                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+
+                            <tbody>
+                                <t t-foreach="doc.order_line" t-as="line">
+                                    <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                       
+                                        <td style="width: 30%;padding: 5px;">
+                                            <span t-field="line.name" style="font-size: 15px; color: #494949ff;"/>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="font-size: 15px;"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+                        <!-- TOTALS SECTION -->
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-5">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_untaxed" 
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_tax" 
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 2px solid #875A7B; background-color: #f8f9fa;">
+                                        <td style="padding: 6px;">
+                                            <h5 style="margin: 0; color: #875A7B;"><strong>Total:</strong></h5>
+                                        </td>
+                                        <td class="text-end" style="padding: 5px;">
+                                            <h5 style="margin: 0; color: #875A7B;">
+                                                <strong style="font-size: 18px;">
+                                                    <span t-field="doc.amount_total" 
+                                                        t-options='{"": "monetary", "display_currency": doc.currency_id}'/>
+                                                </strong>
+                                            </h5>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- PAYMENT TERMS -->
+                        <div class="row mt-4" t-if="doc.payment_term_id">
+                            <div class="col-12">
+                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                    Payment Terms
+                                </h5>
+                                <p style="margin-top: 10px;">
+                                    <span t-field="doc.payment_term_id.note"/>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- RENTAL TERMS & CONDITIONS -->
+                        <div class="mt-4" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
+                            <h5 style="color: #875A7B; margin-top: 0;">
+                                <i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions
+                            </h5>
+                            <ol style="font-size: 11px; line-height: 1.8; margin-bottom: 0;">
+                                <li><strong>Unit Condition:</strong> The leased unit must be vacated in the same clean and good condition as when turned over. Any damage, loss, or unreported issue will be charged to the tenant.</li>
+                                <li><strong>Late Payment:</strong> A penalty of 5% per day may be applied to overdue rent payments beyond the due date.</li>
+                                <li><strong>Liability:</strong> The tenant is fully responsible for any damage or loss within the unit during the lease period.</li>
+                                <li><strong>Security Deposit:</strong> A security deposit equivalent to two (2) months’ rent is required and refundable after inspection and settlement of all obligations.</li>
+                                <li><strong>Payment:</strong> Full payment for advance rent and deposit must be made prior to move-in. Accepted payments include bank transfer, cash, or check.</li>
+                                <li><strong>Move-in &amp; Move-out:</strong> Dates must be coordinated with management at least three (3) days in advance for proper scheduling.</li>
+                                <li><strong>Cancellation Policy:</strong> Early termination or cancellation forfeits the security deposit unless otherwise agreed in writing by both parties.</li>
+                                <li><strong>Utilities:</strong> Electricity, water, internet, and association dues are for the tenant’s account unless stated otherwise in the agreement.</li>
+                            </ol>
+                        </div>
+
+                        <!-- SIGNATURE SECTION -->
+                         <div class="row mt-5" style="page-break-inside: avoid;">
+                            <div class="col-6">
+                                <div style="border: 2px solid #875A7B; padding: 20px; border-radius: 8px; min-height: 150px;">
+                                    <p style="margin-bottom: 5px;"><strong>Company Representative:</strong></p>
+                                    <div style="height: 60px; border-bottom: 1px solid #666; margin-top: 30px;"></div>
+                                    <p style="margin-top: 10px; margin-bottom: 0;">
+                                        <strong>Name:</strong> <span t-field="doc.user_id.name"/><br/>
+                                        <strong>Date:</strong> _________________________
+                                    </p>
+                                </div>
+                            </div>
+                           
+                            <div class="col-6">
+                                <div style="border: 2px solid #875A7B; padding: 20px; border-radius: 8px; min-height: 150px;">
+                                    <p style="margin-bottom: 5px;"><strong>Customer Signature:</strong></p>
+                                    <div style="height: 60px; border-bottom: 1px solid #666; margin-top: 30px;"></div>
+                                    <p style="margin-top: 10px; margin-bottom: 0;">
+                                        <strong>Name:</strong> _________________________<br/>
+                                        <strong>Date:</strong> _________________________
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Optional: Report without external layout (no header/footer) -->
+    <template id="report_rental_quotation_document_no_layout">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="property_lmg_custom.report_rental_quotation_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>
