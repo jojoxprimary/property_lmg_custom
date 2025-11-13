@@ -7,6 +7,7 @@
     'data': [
         'data/mail_template_data.xml',  
         'views/rent_proposal_template.xml',
+        'views/rent_proposal_portal_template.xml',
         'data/mail_template_rent_proposal.xml',  
         'views/rental_order_view.xml',
     ],

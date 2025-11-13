@@ -64,7 +64,7 @@ class SaleOrder(models.Model):
             'is_send_proposal': True,
             'force_email': True,
             'model_description': self.with_context(lang=lang).type_name,
-            'mark_so_as_sent': False,
+            'mark_so_as_sent': True,
         }
 
         # Set template if found
@@ -97,9 +97,25 @@ class SaleOrder(models.Model):
 
         return action
 
+    # MAKE CUSTOM PROPOSAL TEMPLATE THE ONE USED FOR SIGNING AND DOWNLOADING IN PORTAL
+    def _get_name_portal_content_view(self):
+        """Override to use custom portal HTML template for rental orders"""
+        self.ensure_one()
+        if self.is_rental_order:
+            # This shows the HTML view in portal "View Details"
+            return 'property_lmg_custom.rent_proposal_portal_content'
+        return super()._get_name_portal_content_view()
+
+    def _get_report_base_filename(self):
+        """Set custom filename for downloaded PDFs"""
+        self.ensure_one()
+        if self.is_rental_order:
+            return 'Rental_Proposal_%s' % (self.name)
+        return super()._get_report_base_filename()
+
     # FROM PROPOSAL SENT TO PROPOSAL SIGNED WHEN CUSTOMER SIGNS
     def _validate_order(self):
-        """When customer signs, mark substate as 'Signed' but keep in Quotation."""
+        """When customer signs, mark substate as 'Signed' and state in Quotation Sent"""
         for order in self:
             proposal_signed_substate = self.env['base.substate'].search([
                 ('name', '=', 'Proposal Signed'),
@@ -111,10 +127,6 @@ class SaleOrder(models.Model):
                 order.message_post(body="Customer signature received. Substate updated to <b>Proposal Signed</b>.")
             else:
                 _logger.warning("Substate 'Proposal Signed' not found for sale.order")
-
-            if order.state != 'draft':
-                order.state = 'draft'
-
     
     # FOR CONFIRM PAYMENT BUTTON/ACTION
     def action_confirm_payment(self):

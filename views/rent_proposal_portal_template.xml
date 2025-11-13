@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal HTML View -->
+    <template id="rent_proposal_portal_content" name="Rental Proposal Portal View">
+        <div class="o_portal_my_doc">
+            <div class="text-center mb-4">
+                <h3 style="color:#875A7B; font-weight:bold;">RENT PROPOSAL</h3>
+            </div>
+            
+            <!-- Your portal content here -->
+            <div class="container">
+                <!-- Customer & Sales Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                            Customer Information
+                        </h5>
+                        <div t-field="sale_order.partner_id" 
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone", "email"], "no_marker": True}'/>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                            Sales Information
+                        </h5>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td style="width: 40%;"><strong>Date:</strong></td>
+                                <td><span t-field="sale_order.date_order" t-options='{"widget": "date"}'/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Salesperson:</strong></td>
+                                <td><span t-field="sale_order.user_id.name"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rent Details -->
+                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;" class="mt-4">
+                    Rent Details
+                </h5>
+                
+                <t t-set="building_line" t-value="sale_order.order_line.filtered(lambda l: 'Building' in (l.product_id.categ_id.complete_name or ''))[:1]"/>
+                
+                <table class="table table-bordered mt-3">
+                    <tbody>
+                        <tr>
+                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
+                            <td>
+                                <t t-if="building_line">
+                                    <span t-field="building_line.product_id.categ_id.name"/>
+                                </t>
+                                <t t-else="">-</t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
+                            <td>
+                                <span t-esc="sale_order.rental_start_date.strftime('%B %d, %Y') if sale_order.rental_start_date else ''"/>
+                                to
+                                <span t-esc="sale_order.rental_return_date.strftime('%B %d, %Y') if sale_order.rental_return_date else ''"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #f8f9fa;"><strong>Rent Term</strong></td>
+                            <td>
+                                <span t-esc="round(sale_order.duration_days / 30, 1)"/> month(s)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Rent Rate -->
+                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;" class="mt-4">
+                    Rent Rate
+                </h5>
+                <table class="table table-bordered mt-3">
+                    <tbody>
+                        <t t-foreach="sale_order.order_line" t-as="line">
+                            <tr>
+                                <td style="width: 30%; background-color: #f8f9fa;">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                            </tr>
+                        </t>
+                        
+                        <tr>
+                            <td colspan="2" style="padding: 10px;"></td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="background-color: #f8f9fa;"><strong>Subtotal:</strong></td>
+                            <td class="text-end">
+                                <span t-field="sale_order.amount_untaxed" 
+                                      t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: #f8f9fa;"><strong>Taxes:</strong></td>
+                            <td class="text-end">
+                                <span t-field="sale_order.amount_tax" 
+                                      t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr style="background-color: #875A7B; color: white;">
+                            <td><h5 class="mb-0"><strong>Total:</strong></h5></td>
+                            <td class="text-end">
+                                <h5 class="mb-0">
+                                    <strong>
+                                        <span t-field="sale_order.amount_total" 
+                                              t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                                    </strong>
+                                </h5>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Terms & Conditions -->
+                <div class="alert alert-info mt-4">
+                    <h5 style="color: #875A7B;"><i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions</h5>
+                    <ol style="font-size: 12px;">
+                        <li>All rental equipment must be returned in the same condition as received.</li>
+                        <li>Late returns will incur additional charges of 10% of the daily rental rate per day.</li>
+                        <li>The customer is fully responsible for any damage, loss, or theft during the rental period.</li>
+                        <li>Full payment must be confirmed before equipment pickup.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

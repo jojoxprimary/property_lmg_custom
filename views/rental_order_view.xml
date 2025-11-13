@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
 
             <!-- DEBUG INFO BLOCK -->
-            <!-- <xpath expr="//sheet" position="before">
+            <xpath expr="//sheet" position="before">
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                     <strong>Debug Info:</strong>
                     <ul>
@@ -14,7 +14,7 @@
                         <li>Substate: <field name="substate_name" readonly="1"/></li>
                     </ul>
                 </div>
-            </xpath> -->
+            </xpath>
 
             <!-- CUSTOMIZED BUTTONS -->
             <xpath expr="//header/*[1]" position="before">
@@ -59,12 +59,17 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <!-- Remove btn-primary of confirm button in sent state-->
+            <xpath expr="//button[@name='action_confirm'][@id='action_confirm']" position="attributes">
+                <attribute name="class">btn</attribute>
+            </xpath>
+
             <!-- CUSTOM PILL BADGES -->
             <!-- Custom Pill Badge for Proposal Sent -->
             <xpath expr="//div[@name='button_box']" position="after">
                 <div name="waiting_signature_pill" 
                      class="float-end badge rounded-pill fw-bold text-bg-info"
-                     invisible="state != 'draft' or substate_name != 'Proposal Sent'">
+                     invisible="state != 'sent' or substate_name != 'Proposal Sent'">
                     Waiting for Client Signature
                 </div>
             </xpath>
