@@ -10,6 +10,7 @@
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="base.paperformat_us"/>
+        <field name="groups_id" eval="[(6, 0, [])]"/>
     </record>
 
     <!-- Wrapper for your PDF template -->
@@ -140,14 +141,12 @@
                                 </t>
 
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                    <td style="width: 30%; padding: 5px;">
-                                        <span style="font-size: 12px; color: #494949ff;">Requirements Before Move-in</span>
-                                    </td>
-                                    <td style="padding: 5px;">
-                                        <span>Full payment of security deposit(s) and advance rental(s)</span><br/>
-                                        <span>Signed contract of rent</span><br/>
-                                        <span>Valid ID, and/or copy of passport</span><br/>
-                                        <span>Medical certificate and swab/PCR test with negative result</span>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in </strong></td>
+                                    <td>
+                                        <t t-if="building_line">
+                                            <span t-field="building_line.product_id.description"/>
+                                        </t>
+                                        <t t-else="">-</t>
                                     </td>
                                 </tr>
 

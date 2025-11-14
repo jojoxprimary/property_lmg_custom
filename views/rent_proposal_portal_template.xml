@@ -22,15 +22,36 @@
                         <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
                             Sales Information
                         </h5>
-                        <table class="table table-sm table-borderless">
+                        <table class="table table-sm table-bordered">
                             <tr>
-                                <td style="width: 40%;"><strong>Date:</strong></td>
+                                <td style="width: 30%;"><strong>Date</strong></td>
                                 <td><span t-field="sale_order.date_order" t-options='{"widget": "date"}'/></td>
                             </tr>
                             <tr>
-                                <td><strong>Salesperson:</strong></td>
+                                <td><strong>Salesperson</strong></td>
                                 <td><span t-field="sale_order.user_id.name"/></td>
                             </tr>
+                            <tr>
+                            <td><strong>Address</strong></td>
+                                <td>
+                                    <!-- Option 1: Simple address display -->
+                                    <span t-field="sale_order.company_id.street"/><br/>
+                                    <span t-if="sale_order.company_id.street2" t-field="sale_order.company_id.street2"/><br t-if="sale_order.company_id.street2"/>
+                                    <span t-field="sale_order.company_id.city"/>, 
+                                    <span t-field="sale_order.company_id.state_id.name"/> 
+                                    <span t-field="sale_order.company_id.zip"/><br/>
+                                    <span t-field="sale_order.company_id.country_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone</strong></td>
+                                <td><span t-field="sale_order.user_id.mobile"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email</strong></td>
+                                <td><span t-field="sale_order.user_id.email"/></td>
+                            </tr>
+
                         </table>
                     </div>
                 </div>
@@ -54,6 +75,15 @@
                             </td>
                         </tr>
                         <tr>
+                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
+                            <td>
+                                <t t-if="building_line">
+                                    <span t-field="building_line.product_id.name"/>
+                                </t>
+                                <t t-else="">-</t>
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
                             <td>
                                 <span t-esc="sale_order.rental_start_date.strftime('%B %d, %Y') if sale_order.rental_start_date else ''"/>
@@ -67,6 +97,34 @@
                                 <span t-esc="round(sale_order.duration_days / 30, 1)"/> month(s)
                             </td>
                         </tr>
+
+                        <!-- Loop through product attributes -->
+                        <t t-if="building_line and building_line.product_id">
+                            <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px; background-color: #f8f9fa;">
+                                        <strong>
+                                            <span t-field="attr_value.attribute_id.name"/>
+                                        </strong>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-field="attr_value.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+
+                        <tr>
+                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in </strong></td>
+                            <td>
+                                <t t-if="building_line">
+                                    <span t-field="building_line.product_id.description"/>
+                                </t>
+                                <t t-else="">-</t>
+                            </td>
+                        </tr>
+
+
                     </tbody>
                 </table>
 
@@ -79,7 +137,7 @@
                         <t t-foreach="sale_order.order_line" t-as="line">
                             <tr>
                                 <td style="width: 30%; background-color: #f8f9fa;">
-                                    <span t-field="line.name"/>
+                                    <strong><span t-field="line.name"/></strong>
                                 </td>
                                 <td class="text-end">
                                     <span t-field="line.price_unit"/>
@@ -119,16 +177,22 @@
                     </tbody>
                 </table>
 
-                <!-- Terms & Conditions -->
-                <div class="alert alert-info mt-4">
-                    <h5 style="color: #875A7B;"><i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions</h5>
-                    <ol style="font-size: 12px;">
-                        <li>All rental equipment must be returned in the same condition as received.</li>
-                        <li>Late returns will incur additional charges of 10% of the daily rental rate per day.</li>
-                        <li>The customer is fully responsible for any damage, loss, or theft during the rental period.</li>
-                        <li>Full payment must be confirmed before equipment pickup.</li>
-                    </ol>
-                </div>
+                <!-- RENTAL TERMS & CONDITIONS -->
+                    <div class="mt-4" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
+                        <h5 style="color: #875A7B; margin-top: 0;">
+                            <i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions
+                        </h5>
+                        <ol style="font-size: 11px; line-height: 1.8; margin-bottom: 0;">
+                            <li><strong>Unit Condition:</strong> The leased unit must be vacated in the same clean and good condition as when turned over. Any damage, loss, or unreported issue will be charged to the tenant.</li>
+                            <li><strong>Late Payment:</strong> A penalty of 5% per day may be applied to overdue rent payments beyond the due date.</li>
+                            <li><strong>Liability:</strong> The tenant is fully responsible for any damage or loss within the unit during the lease period.</li>
+                            <li><strong>Security Deposit:</strong> A security deposit equivalent to two (2) months’ rent is required and refundable after inspection and settlement of all obligations.</li>
+                            <li><strong>Payment:</strong> Full payment for advance rent and deposit must be made prior to move-in. Accepted payments include bank transfer, cash, or check.</li>
+                            <li><strong>Move-in &amp; Move-out:</strong> Dates must be coordinated with management at least three (3) days in advance for proper scheduling.</li>
+                            <li><strong>Cancellation Policy:</strong> Early termination or cancellation forfeits the security deposit unless otherwise agreed in writing by both parties.</li>
+                            <li><strong>Utilities:</strong> Electricity, water, internet, and association dues are for the tenant’s account unless stated otherwise in the agreement.</li>
+                        </ol>
+                    </div>
             </div>
         </div>
     </template>
