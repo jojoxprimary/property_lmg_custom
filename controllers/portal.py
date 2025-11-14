@@ -16,7 +16,8 @@ class RentalCustomerPortal(CustomerPortal):
         # If requesting PDF and it's a rental order
         if report_type == 'pdf' and order_sudo.is_rental_order:
             # Use custom rental report
-            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False)
+            # pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False)
+            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False).sudo()
             
             if pdf_report:
                 pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
