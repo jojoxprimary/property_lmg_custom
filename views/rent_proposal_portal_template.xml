@@ -66,6 +66,14 @@
                 <table class="table table-bordered mt-3">
                     <tbody>
                         <tr>
+                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
+                            <td style="padding: 5px;">
+                                <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
+                                <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name"/>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
                             <td>
                                 <t t-if="building_line">
@@ -102,7 +110,7 @@
                         <t t-if="building_line and building_line.product_id">
                             <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                    <td style="width: 30%; padding: 5px; background-color: #f8f9fa;">
+                                    <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
                                         <strong>
                                             <span t-field="attr_value.attribute_id.name"/>
                                         </strong>

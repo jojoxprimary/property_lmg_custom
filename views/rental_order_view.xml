@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
 
             <!-- DEBUG INFO BLOCK -->
-            <xpath expr="//sheet" position="before">
+            <!-- <xpath expr="//sheet" position="before">
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                     <strong>Debug Info:</strong>
                     <ul>
@@ -14,7 +14,7 @@
                         <li>Substate: <field name="substate_name" readonly="1"/></li>
                     </ul>
                 </div>
-            </xpath>
+            </xpath> -->
 
             <!-- CUSTOMIZED BUTTONS -->
             <xpath expr="//header/*[1]" position="before">

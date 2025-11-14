@@ -86,12 +86,23 @@
                         <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
 
                             <tbody> 
+
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">         
+                                    <td style="width: 30%;padding: 5px;">
+                                        <span style="color: #494949ff;">Address</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
+                                        <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name" style="font-size: 12px;"/>
+                                    </td>
+                                </tr>
+
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">         
                                     <td style="width: 30%;padding: 5px;">
                                         <span style="color: #494949ff;">Building Name</span>
                                     </td>
                                     <td style="padding: 5px;">
-                                         <span t-field="building_line.product_id.categ_id.name" style="font-size: 12px;"/>
+                                        <span t-field="building_line.product_id.categ_id.name" style="font-size: 12px;"/>
                                     </td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid #e6dee4ff;">                                 
@@ -207,17 +218,6 @@
                             </div>
                         </div>
 
-                        <!-- PAYMENT TERMS -->
-                        <div class="row mt-4" t-if="doc.payment_term_id">
-                            <div class="col-12">
-                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
-                                    Payment Terms
-                                </h5>
-                                <p style="margin-top: 10px;">
-                                    <span t-field="doc.payment_term_id.note"/>
-                                </p>
-                            </div>
-                        </div>
 
                         <!-- RENTAL TERMS & CONDITIONS -->
                         <div class="mt-4" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
