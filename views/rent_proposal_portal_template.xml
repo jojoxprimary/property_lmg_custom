@@ -67,9 +67,12 @@
                     <tbody>
                         <tr>
                             <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
-                            <td style="padding: 5px;">
-                                <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
-                                <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name"/>
+                            <td>
+                                <t t-if="building_line.product_id.categ_id and building_line.product_id.categ_id.complete_name">
+                                    <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
+                                    <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name"/>
+                                </t>
+                                <t t-else="">-</t>
                             </td>
                         </tr>
 
