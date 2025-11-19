@@ -92,8 +92,11 @@
                                         <span style="color: #494949ff;">Address</span>
                                     </td>
                                     <td style="padding: 5px;">
-                                        <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
-                                        <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name" style="font-size: 12px;"/>
+                                         <t t-if="building_line.product_id.categ_id and building_line.product_id.categ_id.complete_name">
+                                            <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
+                                            <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name" style="font-size: 12px;"/>
+                                        </t>
+                                        <t t-else="">-</t>
                                     </td>
                                 </tr>
 
@@ -237,30 +240,31 @@
                         </div>
 
                         <!-- SIGNATURE SECTION -->
-                         <div class="row mt-5" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <div style="border: 2px solid #875A7B; padding: 20px; border-radius: 8px; min-height: 150px;">
-                                    <p style="margin-bottom: 5px;"><strong>Company Representative:</strong></p>
-                                    <div style="height: 60px; border-bottom: 1px solid #666; margin-top: 30px;"></div>
-                                    <p style="margin-top: 10px; margin-bottom: 0;">
-                                        <strong>Name:</strong> <span t-field="doc.user_id.name"/><br/>
-                                        <strong>Date:</strong> _________________________
-                                    </p>
+                        <!-- SIGNATURE SECTION - Show if already signed -->
+                        <section t-if="doc.signature" id="signature" name="Signature">
+                            <div class="row mt-4" name="signature">
+                                <div class="col-6">
+                                    <div style="text-align: center;">
+                                        <h5>Company Representative</h5>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> <span t-field="doc.user_id.name"/><br/>
+                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6">
+                                    <div style="text-align: center;">
+                                        <h5>Customer Signature</h5>
+                                        <img t-att-src="image_data_uri(doc.signature)" style="max-height: 3rem; max-width: 100%;"/>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> <span t-field="doc.signed_by"/><br/>
+                                            <strong>Date:</strong> <span t-field="doc.signed_on" t-options='{"widget": "datetime"}'/>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                           
-                            <div class="col-6">
-                                <div style="border: 2px solid #875A7B; padding: 20px; border-radius: 8px; min-height: 150px;">
-                                    <p style="margin-bottom: 5px;"><strong>Customer Signature:</strong></p>
-                                    <div style="height: 60px; border-bottom: 1px solid #666; margin-top: 30px;"></div>
-                                    <p style="margin-top: 10px; margin-bottom: 0;">
-                                        <strong>Name:</strong> _________________________<br/>
-                                        <strong>Date:</strong> _________________________
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
+                        </section>
                     </div>
                 </t>
             </t>
