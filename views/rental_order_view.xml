@@ -36,15 +36,6 @@
                     invisible="substate_name != 'For Review'"
                     confirm="Are you sure you want to approve and send this proposal?"
                 />
-                <!-- Confirm Payment Button -->
-                <button
-                    name="action_confirm_payment"
-                    string="Confirm Payment"
-                    type="object"
-                    class="btn-primary"
-                    invisible="substate_name != 'Proposal Signed'"
-                    confirm="Confirming a payment will send a Rent Agreement email to the customer. Are you sure you want to proceed?"
-                />
             </xpath>
 
 
