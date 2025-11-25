@@ -30,7 +30,7 @@
                 <!-- Send Proposal Button -->
                 <button
                     name="action_send_proposal"
-                    string="Send Proposal"
+                    string="Send to Client"
                     type="object"
                     class="btn-primary"
                     invisible="substate_name != 'For Review'"
