@@ -1,4 +1,7 @@
 from odoo import models, fields, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -7,17 +10,30 @@ class SaleOrder(models.Model):
     substate_name = fields.Char(string="Substate Name", compute="_compute_substate_name", store=False)
     payment_attachment = fields.Binary(string="Proposal Payment Attachment")
 
+    # TO UPDATE IF IN RENTAL APP CONTEXT
+    is_in_rental = fields.Boolean(
+        string="In Rental App",
+        compute='_compute_is_in_rental',
+        store=False
+    )
+
+    # OPTION: IS IN RENTAL - check if we're in rental context
+    def _compute_is_in_rental(self):
+        for order in self:
+            # Check if rental-specific fields exist on the model
+            order.is_in_rental = hasattr(order, 'rental_start_date')
+
     is_rental_order = fields.Boolean(
         string="Is Rental Order",
         compute="_compute_is_rental_order",
         store=True
     )
 
-    # OPTION: IS RENTAL ORDER
     @api.depends('order_line', 'order_line.is_rental')
     def _compute_is_rental_order(self):
         for order in self:
             order.is_rental_order = any(line.is_rental for line in order.order_line if hasattr(line, 'is_rental'))
+
 
     # TO GET SUBSTATE NAME FOR VIEW PURPOSES
     @api.depends('substate_id')
@@ -102,13 +118,28 @@ class SaleOrder(models.Model):
         """Override to use custom portal HTML template for rental orders"""
         self.ensure_one()
         if self.is_rental_order:
-            # View Details
             return 'property_lmg_custom.rent_proposal_portal_content'
         return super()._get_name_portal_content_view()
 
     def _get_report_base_filename(self):
         """Set custom filename for downloaded PDFs"""
         self.ensure_one()
+        
+        _logger.info(f"Filename for {self.name} - is_in_rental: {self.is_in_rental}")
+        
+        # Use is_in_rental since report_name is not available in portal context
         if self.is_rental_order:
-            return 'Rental_Proposal_%s' % (self.name)
+            filename = 'Rental_Proposal_%s' % (self.name)
+            _logger.info(f"Using rental filename: {filename}")
+            return filename
+        
+        _logger.info(f"Using default filename")
         return super()._get_report_base_filename()
+
+
+    def action_download_contract(self):
+        """Download contract PDF."""
+        self.ensure_one()
+        
+        # Return the standard quotation/order print action
+        return self.env.ref('sale.action_report_saleorder').report_action(self)

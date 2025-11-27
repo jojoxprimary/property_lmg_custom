@@ -7,26 +7,29 @@ class RentalCustomerPortal(CustomerPortal):
 
     @http.route(['/my/orders/<int:order_id>'], type='http', auth="public", website=True)
     def portal_order_page(self, order_id, access_token=None, report_type=None, download=False, **kw):
-        """Override to use custom PDF for rental orders"""
+        """Override to use custom PDF report for rental orders"""
+        
+        # Check access to the order
         try:
             order_sudo = self._document_check_access('sale.order', order_id, access_token=access_token)
         except Exception:
             return request.redirect('/my')
 
-        # If requesting PDF and it's a rental order
+        # Use custom rental report for orders created in rental app
         if report_type == 'pdf' and order_sudo.is_rental_order:
-            # Use custom rental report
-            # pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False)
-            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False).sudo()
+            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False)
             
             if pdf_report:
+                # Generate PDF content
                 pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
                     pdf_report.report_name,
                     [order_sudo.id]
                 )
                 
+                # Set filename
                 filename = 'Rental_Proposal_%s.pdf' % order_sudo.name
                 
+                # Set headers for download or inline display
                 if download:
                     pdfhttpheaders = [
                         ('Content-Type', 'application/pdf'),
@@ -42,7 +45,7 @@ class RentalCustomerPortal(CustomerPortal):
                 
                 return request.make_response(pdf_content, headers=pdfhttpheaders)
 
-        # Otherwise, use default behavior
+        # Use default portal behavior for non-rental orders
         return super().portal_order_page(
             order_id=order_id,
             access_token=access_token,
