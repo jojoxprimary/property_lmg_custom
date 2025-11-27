@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the report action -->
+    <record id="action_report_rent_agreement" model="ir.actions.report">
+        <field name="name">Rent Agreement</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property_lmg_custom.report_rent_agreement_document</field>
+        <field name="report_file">property_lmg_custom.report_rent_agreement_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+        <field name="print_report_name">'Rent Agreement - %s' % (object.name)</field>
+    </record>
+
+    <!-- Define the report template -->
+    <template id="report_rent_agreement_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h5 style="text-align: center; font-weight: bold;">RESIDENTIAL RENT AGREEMENT</h5>
+                        
+                        <t t-set="building_line" t-value="doc.order_line.filtered(lambda l: 'Building' in (l.product_id.categ_id.complete_name or ''))[:1]"/>
+                        
+                        <!-- Section 1: Lessee Data -->
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; margin-top: 20px;">
+                            Lessee's Data
+                        </h5>
+                        
+                        <!-- New Account / Renewal Row -->
+                        <table class="table table-sm" style="border: 1px solid #dee2e6; font-size: 12px; margin-top: -1px;">
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="padding: 5px;">
+                                        <strong>[&#8195;] New Account</strong>
+                                        <span style="margin-left: 50px;"><strong>[&#8195;] Renewal</strong></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <!-- Left Column -->
+                            <div class="col-6">
+                                <table class="table table-sm" style="border: 1px solid #dee2e6; font-size: 12px">
+                                    <tbody>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="width: 45%; padding: 5px;">
+                                                <span style="color: #494949ff;">Agreement Number</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Date</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Client Name</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.partner_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Address</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.partner_id.street"/>, <span t-field="doc.partner_id.city"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Contact Number</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.partner_id.phone"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Email</span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.partner_id.email"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Date of Birth</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="col-6">
+                                <table class="table table-sm" style="border: 1px solid #dee2e6; font-size: 12px">
+                                    <tbody>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="width: 45%; padding: 5px;">
+                                                <span style="color: #494949ff;">ID Type</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">ID Number</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Civil Status</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Company Name</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Designation</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="padding: 5px;">
+                                                <span style="color: #494949ff;">Company Email</span>
+                                            </td>
+                                            <td style="padding: 5px;"> </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Person to Occupy the Unit/Room -->
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                            Person to Occupy the Unit/Room
+                        </h5>
+                        <table class="table table-sm table-bordered mt-3" style="font-size: 12px;">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th style="padding: 5px;">Surname</th>
+                                    <th style="padding: 5px;">First Name</th>
+                                    <th style="padding: 5px;">Middle Name</th>
+                                    <th style="padding: 5px;">Date of Birth</th>
+                                    <th style="padding: 5px;">Relationship</th>
+                                    <th style="padding: 5px;">Contact Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="height: 30px;">
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                    <td style="padding: 5px;"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Section 3: Person to Notify in Case of Emergency -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Person to Notify in Case of Emergency
+                            </h5>
+                            <table class="table table-sm table-bordered mt-3" style="font-size: 12px;">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th style="padding: 5px;">Name</th>
+                                        <th style="padding: 5px;">Relationship</th>
+                                        <th style="padding: 5px;">Address</th>
+                                        <th style="padding: 5px;">Contact Number</th>
+                                        <th style="padding: 5px;">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height: 30px;">
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Section 4: Rent Details -->
+                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                            Rent Details
+                        </h5>
+                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="color: #494949ff;">Address</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <t t-if="building_line.product_id.categ_id and building_line.product_id.categ_id.complete_name">
+                                            <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
+                                            <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="color: #494949ff;">Building Name</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-field="building_line.product_id.categ_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="color: #494949ff;">Unit Number</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-field="building_line.product_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="color: #494949ff;">Move-in/Move-out Date</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
+                                        to
+                                        <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; padding: 5px;">
+                                        <span style="color: #494949ff;">Rent Term</span>
+                                    </td>
+                                    <td style="padding: 5px;">
+                                        <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
+                                    </td>
+                                </tr>
+    
+                                <!-- Loop through product attributes -->
+                                <t t-if="building_line and building_line.product_id">
+                                    <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="width: 30%; padding: 5px;">
+                                                <span style="font-size: 12px; color: #494949ff;">
+                                                    <span t-field="attr_value.attribute_id.name"/>
+                                                </span>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span style="font-size: 12px;">
+                                                    <span t-field="attr_value.name"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+
+                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in </strong></td>
+                                    <td>
+                                        <t t-if="building_line">
+                                            <span t-field="building_line.product_id.description"/>
+                                        </t>
+                                        <t t-else="">-</t>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <!-- Section 5: Rent Rate -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Rate
+                            </h5>
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                            <td style="width: 30%; padding: 5px;">
+                                                <span t-field="line.name" style="color: #494949ff;"/>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        <!-- Section 6: Rent Inclusion -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Inclusion
+                            </h5>
+                            <table class="table table-sm table-bordered mt-3" style="font-size: 12px;">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th style="padding: 5px;">Parking Slot Number</th>
+                                        <th style="padding: 5px;">Access Keys</th>
+                                        <th style="padding: 5px;">Other</th>
+                                        <th style="padding: 5px;">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height: 30px;">
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Section 7: Terms and Conditions -->
+                        <div class="mt-4" style="background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
+                            <h5 style="color: #875A7B; margin-top: 0;">
+                                <i class="fa fa-file-text-o"/> Terms &amp; Conditions
+                            </h5>
+                            <ol style="font-size: 11px; line-height: 1.8; margin-bottom: 0;">
+                                <li>
+                                    The LESSEE agrees to pay the above mentioned total Monthly Rental Due at the office of the LESSOR on or before the day specified above.
+                                </li>
+                                <li>
+                                    The Advance Rental shall be delivered by the LESSEE seven (7) working days prior to the comencement of this contract and shall be applied to the last month (s) of the lease term, however, not refundable upon the voluntay cancellation or pre - termination by the LESSEE. 
+                                </li>
+                                <li>
+                                    The  Security Deposit shall be equivalent to the above mentioned monthly rental rate, which shall answer the cost of repairs and restoration of damages in the premises caused by the negligence and willful act of the LESSEE and other monetary obligations resulting from the LESSEE's violation of any of the terms and conditions of this contract. The amount shall be refundable or of any balance thereof, within 60 days from the Termination of the Contract. The LESSEE's liability for any breach and/or violation committed is no way limited to the said Security Deposit. 
+                                </li>
+                                <li>
+                                    The room/unit is deemed occupied upon full payment of the required advance rental and security deposit. The Right to Hold the room/unit belongs to the LESSOR when the LESSEE fails or neglects to pay the rent. Upon expiration of the lease period or failure to pay the rent, the LESSOR has the right to LEASE the room/unit to any incoming prospective lessees. 
+                                </li>
+                                <li>
+                                    A 4.00 % Surchage shall be added per month for payment of rental made after the agreed due date. It is expressly agreed and understood that the payment of the rental herein stipulated shall be made without the necessity of express demand and without delay on any ground whatsoever. The interest shall continue until full settlement has been finally made. 
+                                </li>
+                                <li>
+                                    The LESSEE shall pay for and defray at its Exclusive Expense, the Consumption of water, electricity, and other utilities in the Leased Premises.
+                                </li>
+                                <li>
+                                    The LESSEE shall NOT make any Alterations to the room, unit or building without prior written consent from the LESSOR. This includes, but not limited to, painting, repainting, carpentry works, and other related alterations.  The cost of any alteration or improvement shall be the exclusive account and at the expense of the LESSEE. 
+                                </li>
+                                <li>
+                                    The LESSEE shall use the rented room/unit for Residential purpose only. The LESSEE shall be responsible for the proper use and upkeep of the appliances/ equipment, furniture, fixtures, and other items, and of the entire rented room/unit, including its sanitation and hygiene. Any damages/lost/infestation caused by the negligence or omission of the LESSEE, the cost of repairs, or replacement, or pest control shall be the exclusive account and the expense of the LESSEE.
+                                </li>
+                                <li>
+                                    The LESSEE may choose to Renew this Contract through a written request for Renewal at least thirty (30) working days prior to its expiration, subject to the approval of the LESSOR, which approval shall not be withheld unduly without reasonable and just cause. In this case, the LESSEE cannot use the  ___2__month(s)  security deposit as monthly payment.
+                                </li>
+                                <li>
+                                    In the event that the LESSEE Pre- terminates this rent agreement before the term expires, the LESSEE is obliged to pay the monthly rental(s) for the remaining period of this agreement, and shall forefeit the advance rental and security deposit entirely in favor of  Primary Homes, Inc. 
+                                </li>
+                                <li>
+                                    The LESSEE agrees that the room/ unit rented shall be occupied ONLY by him/her, or as specified Occupant in this Agreement.  If the LESSEE or Occupant of the unit desires to share, or let other person(s) occupy the room/unit, besides himself/herself, the LESSEE must SECURE CONSENT of the LESSOR in writing or electronic mail at least five (5) working days prior to the guest's stay.  
+                                </li>
+                                <li>
+                                    The LESSEE shall not Assign or Sublease the room/unit without written permission from the LESSOR.
+                                </li>
+                                <li>
+                                    Further extension is chargeable for a month's rent. Should the LESSEE Hold-over and remain to occupy the room/ unit after the expiration of the rental term with or without consent of the LESSOR, shall not be considered as renewal or extension until a rental agreement has been signed. In the meantime, Any Extension of Stay beyond 12:00 noon shall be charged accordingly. The LESSEE shall continue to pay his/her existing monthly rentals subject to possible adjustments based on the rental rates in the new agreement.  
+                                </li>
+                                <li>
+                                    The LESSOR or any of it its agent/representative together with a witness, with or without the presence of the Occupant Resident/ Lessee, shall have the right to enter the room or unit for purposes of Inspection.
+                                </li>
+                                <li>
+                                    The LESSEE shall be responsible for any Damages caused to the premises/ building due to his/her negligence or omission. The cost of the damage SHALL be deductible from the Security Deposit. Once 50% of the Security Deposit is consumed, the LESSEE shall pay the remaining 50% to ensure that the Secuirty Deposit shall be equal to the original amount.  
+                                </li>
+                                <li>
+                                    The LESSOR shall not be held liable for any loss of personal items inside his/her respective room/ unit, and within the building premises due to theft or his/her negligence or omission.
+                                </li>
+                                <li>
+                                     If the following conditions exist, the leasing agreement shall be considered Terminated: The expiration of the rental term; the LESSEE has committed violation(s) to this agreement, the house rules; default in the payment of rent(s), and any additional fees; abandonment of the room/unit for thirty (30) days; Unconsented Subletting; and Commission of grave offenses injurious to other LESSEES or RESIDENTS, and to the LESSOR and its agents or representatives.
+                                </li>
+                                <li>
+                                    Any Default made in the payment of rent, or if, any breach is made with any other terms or conditions, at the option of the LESSOR, the lease shall be terminated. The rent is considered in default if it remains unpaid for two (2) consecutive months. If there is still no action from the LESSEE 3 to 5 days after receipt of the final demand notice, the LESSOR will be forced to take legal action and/or evict the LESSEE.
+                                </li>
+                                <li>
+                                    Upon the termination of this rental agreement, and/or by eviction, the LESSEE shall Vacate the premises peacefully and in the same condition as when he/she first occupied the unit/room.
+                                </li>
+                                <li>
+                                    In case of a) default, or b) unpaid obligation, c) pre-termination of this lease, or d) abandonment of the premises, the LESSEE hereby agrees that the LESSOR may enter the leased premises by any means may be employed without the need of a court order to conduct physical inventory of the items found inside the premises in the presence of the LESSEE, if available, and to transport the items for safekeeping.  The LESSEE also agrees that, after the lapse of thirty (30) days from the date of physical inventory, still fails to pay the whole obligation, the LESSOR is hereby appointed as an attorney-in-fact with the authority and power to sell or dispose any or all the items covered in the physical inventory for such price  may deem reasonable to satisfy the rentals-in-arrears; this is without prejudice to collect deficiencies if  the proceeds of the sale cannot cover the arrears.
+                                </li>
+                                <li>
+                                    Upon signing of this rent agreement, the LESSEE hereby agrees to pay the required advance rent and security deposit and further agrees to abide the terms and conditions, and the  house rules and any amendments thereto.
+                                </li>
+
+
+
+                            </ol>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6" style="text-align: center;">
+                                <p>_______________________</p>
+                                <p><strong>Landlord Signature</strong></p>
+                                <p style="font-size: 12px;">Date: _______________</p>
+                            </div>
+                            <div class="col-6" style="text-align: center;">
+                                <p>_______________________</p>
+                                <p><strong>Tenant Signature</strong></p>
+                                <p style="font-size: 12px;">Date: _______________</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

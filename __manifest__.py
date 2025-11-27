@@ -10,6 +10,7 @@
         'views/rent_proposal_portal_template.xml',
         'data/mail_template_rent_proposal.xml',  
         'views/rental_order_view.xml',
+        'report/rent_agreement_report.xml',
     ],
     'installable': True,
     'application': False,

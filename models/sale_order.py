@@ -142,4 +142,6 @@ class SaleOrder(models.Model):
         self.ensure_one()
         
         # Return the standard quotation/order print action
-        return self.env.ref('sale.action_report_saleorder').report_action(self)
+        return self.env.ref('property_lmg_custom.action_report_rent_agreement').report_action(self)
+
+        
