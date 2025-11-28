@@ -330,6 +330,38 @@
                             </table>
                         </div>
 
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-5">
+                                <table class="table table-sm">
+                                    <tr style="font-size: 12px;">
+                                        <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_untaxed" 
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 12px;">
+                                        <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_tax" 
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 15px;">
+                                        <td style="padding: 6px;">
+                                            <span style="margin: 0; color: #875A7B;">Total:</span>
+                                        </td>
+                                        <td class="text-end" style="padding: 5px;">
+                                            <span style="margin: 0; color: #875A7B;">
+                                                <span t-field="doc.amount_total" 
+                                                    t-options='{"": "monetary", "display_currency": doc.currency_id}'/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
 
                         <!-- Section 6: Rent Inclusion -->
                         <div style="page-break-inside: avoid;">
