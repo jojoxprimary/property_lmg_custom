@@ -1,4 +1,8 @@
 <odoo>
+    <!-- <record id="sale_rental_action" model="ir.actions.act_window">
+        <field name="context">{"is_rental_context": true}</field>
+    </record> -->
+
     <record id="view_rental_order_form_inherit_substate" model="ir.ui.view">
         <field name="name">rental.order.form.substate.custom</field>
         <field name="model">sale.order</field>
@@ -10,6 +14,7 @@
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                     <strong>Debug Info:</strong>
                     <ul>
+                        <li>Is In Rental: <field name="is_in_rental" readonly="1"/></li>
                         <li>Is Rental Order: <field name="is_rental_order" readonly="1"/></li>
                         <li>Substate: <field name="substate_name" readonly="1"/></li>
                     </ul>
@@ -38,6 +43,28 @@
                 />
             </xpath>
 
+            <!-- Download Contract Button (after Create Invoice) -->
+            <xpath expr="//header/button[@id='create_invoice']" position="after">
+                <button
+                    name="action_download_contract"
+                    string="Download Contract"
+                    type="object"
+                    class="btn"
+                    invisible="(not is_subscription and invoice_status != 'to invoice') or (is_subscription and (state != 'sale' or (next_invoice_date &gt; current_date and invoice_status != 'to invoice'))) or state != 'sale' or is_rental_order != True"
+                />
+            </xpath>
+
+            <!-- Download Contract Button (after Create Invoice for Subscription) -->
+            <xpath expr="//header/button[@id='create_invoice_sub']" position="after">
+                <button
+                    name="action_download_contract"
+                    string="Download Contract"
+                    type="object"
+                    class="btn"
+                    invisible="not (is_subscription and (state != 'sale' or (next_invoice_date &gt; current_date and invoice_status != 'to invoice'))) or state != 'sale' or is_rental_order != True"
+                />
+            </xpath>
+
 
             <!-- OVERRIDE DEFAULT BUTTONS  -->
             <!-- Hide Send by Email Button (Primary - in draft state) -->
@@ -55,6 +82,26 @@
                 <attribute name="class">btn</attribute>
             </xpath>
 
+            <!-- Hide Pickup Button -->
+            <xpath expr="//header/button[@name='action_open_pickup']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Upsell Button -->
+            <xpath expr="//header/button[@name='prepare_upsell_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide Renew Button -->
+            <xpath expr="//header/button[@name='prepare_renewal_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Hide Close Button -->
+            <xpath expr="//header/button[@name='443']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <!-- CUSTOM PILL BADGES -->
             <!-- Custom Pill Badge for Proposal Sent -->
             <xpath expr="//div[@name='button_box']" position="after">
@@ -66,15 +113,6 @@
             </xpath>
 
             <!-- CUSTOM FIELDS -->
-            <!-- Payment Attachment Field - to update every succeeding substate-->
-            <xpath expr="//sheet/notebook" position="before">
-                <group
-                    name="payment_attachment_group"
-                    string="Payment Details"
-                    invisible="not (substate_name in ['Proposal Signed', 'Payment Confirmed', 'Rental Agreement Sent', 'Rental Agreement Signed'])">
-                    <field name="payment_attachment" filename="payment_attachment_filename"/>
-                </group>
-            </xpath>
 
         </field>
     </record>
@@ -94,7 +132,8 @@
         </field>
     </record>
 
-    <!-- SUBSTATE TO SHOW ONLY IN RENTAL ORDER VIEW  -->
+
+    <!-- SUBSTATE TO SHOW ONLY IN RENTAL APP VIEW  -->
     <record id="view_order_form_hide_substate_sales" model="ir.ui.view">
         <field name="name">sale.order.form.hide.substate.sales</field>
         <field name="model">sale.order</field>
@@ -108,4 +147,5 @@
             </xpath>
         </field>
     </record>
+
 </odoo>
