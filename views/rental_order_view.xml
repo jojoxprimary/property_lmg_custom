@@ -98,7 +98,7 @@
             </xpath>
             
             <!-- Hide Close Button -->
-            <xpath expr="//header/button[@name='443']" position="attributes">
+            <xpath expr="//header/button[@name='449']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
