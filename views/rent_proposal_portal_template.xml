@@ -193,23 +193,6 @@
                     </tbody>
                 </table>
 
-                <!-- RENTAL TERMS & CONDITIONS -->
-                    <div class="mt-4" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
-                        <h5 style="color: #875A7B; margin-top: 0;">
-                            <i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions
-                        </h5>
-                        <ol style="font-size: 11px; line-height: 1.8; margin-bottom: 0;">
-                            <li><strong>Unit Condition:</strong> The leased unit must be vacated in the same clean and good condition as when turned over. Any damage, loss, or unreported issue will be charged to the tenant.</li>
-                            <li><strong>Late Payment:</strong> A penalty of 5% per day may be applied to overdue rent payments beyond the due date.</li>
-                            <li><strong>Liability:</strong> The tenant is fully responsible for any damage or loss within the unit during the lease period.</li>
-                            <li><strong>Security Deposit:</strong> A security deposit equivalent to two (2) months’ rent is required and refundable after inspection and settlement of all obligations.</li>
-                            <li><strong>Payment:</strong> Full payment for advance rent and deposit must be made prior to move-in. Accepted payments include bank transfer, cash, or check.</li>
-                            <li><strong>Move-in &amp; Move-out:</strong> Dates must be coordinated with management at least three (3) days in advance for proper scheduling.</li>
-                            <li><strong>Cancellation Policy:</strong> Early termination or cancellation forfeits the security deposit unless otherwise agreed in writing by both parties.</li>
-                            <li><strong>Utilities:</strong> Electricity, water, internet, and association dues are for the tenant’s account unless stated otherwise in the agreement.</li>
-                        </ol>
-                    </div>
-
                 <section t-if="sale_order.signature" id="signature" name="Signature">
                     <div class="row mt-4" name="signature">
                         <div t-attf-class="#{'col-3' if report_type != 'html' else 'col-sm-7 col-md-4'} ms-auto text-center">

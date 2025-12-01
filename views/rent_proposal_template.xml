@@ -18,8 +18,6 @@
                 (object.date_order.strftime("%Y-%m-%d") if object.date_order else "NoDate")
             )
         </field>
-
-
     </record>
 
     <!-- Main Report Template -->
@@ -31,7 +29,10 @@
                         <h5 style="text-align: center; font-weight: bold;">
                         RENT PROPOSAL
                         </h5>
-                        <t t-set="building_line" t-value="doc.order_line.filtered(lambda l: 'Building' in (l.product_id.categ_id.complete_name or ''))[:1]"/>
+                        
+                        <!-- Get the first order line (assuming rental property is always first or most relevant) -->
+                        <t t-set="property_line" t-value="doc.order_line[:1]"/>
+                        
                         <!-- CUSTOMER & ORDER INFO -->
                         <div class="row">
                             <div class="col-6">
@@ -55,9 +56,8 @@
                                         <td><span t-field="doc.user_id.name"/></td>
                                     </tr>
                                     <tr>
-                                    <td><strong>Address:</strong></td>
+                                        <td><strong>Address:</strong></td>
                                         <td>
-                                            <!-- Option 1: Simple address display -->
                                             <span t-field="doc.company_id.street"/><br/>
                                             <span t-if="doc.company_id.street2" t-field="doc.company_id.street2"/><br t-if="doc.company_id.street2"/>
                                             <span t-field="doc.company_id.city"/>, 
@@ -66,11 +66,11 @@
                                             <span t-field="doc.company_id.country_id.name"/>
                                         </td>
                                     </tr>
-                                     <tr t-if="doc.user_id.mobile">
+                                    <tr t-if="doc.user_id.mobile">
                                         <td><strong>Phone:</strong></td>
                                         <td><span t-field="doc.user_id.mobile"/></td>
                                     </tr>
-                                     <tr t-if="doc.user_id.email">
+                                    <tr t-if="doc.user_id.email">
                                         <td><strong>Email:</strong></td>
                                         <td><span t-field="doc.user_id.email"/></td>
                                     </tr>
@@ -84,86 +84,88 @@
                         </h5>
 
                         <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
-
                             <tbody> 
-
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">         
-                                    <td style="width: 30%;padding: 5px;">
-                                        <span style="color: #494949ff;">Address</span>
-                                    </td>
+                                <!-- Address Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
                                     <td style="padding: 5px;">
-                                         <t t-if="building_line.product_id.categ_id and building_line.product_id.categ_id.complete_name">
-                                            <t t-set="address_parts" t-value="building_line.product_id.categ_id.complete_name.split('/')"/>
-                                            <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else building_line.product_id.categ_id.complete_name" style="font-size: 12px;"/>
+                                        <t t-if="property_line and property_line.product_id.categ_id">
+                                            <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
+                                            <!-- Get the second part (index 1) if it exists, which should be the address -->
+                                            <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else '-'"/>
                                         </t>
                                         <t t-else="">-</t>
                                     </td>
                                 </tr>
 
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">         
-                                    <td style="width: 30%;padding: 5px;">
-                                        <span style="color: #494949ff;">Building Name</span>
-                                    </td>
-                                    <td style="padding: 5px;">
-                                        <span t-field="building_line.product_id.categ_id.name" style="font-size: 12px;"/>
+                                <!-- Building Name Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
+                                    <td>
+                                        <t t-if="property_line and property_line.product_id.categ_id">
+                                            <!-- Get the third part (index 2) if it exists, which should be the building name -->
+                                            <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
+                                            <span t-esc="address_parts[2].strip() if len(address_parts) > 2 else property_line.product_id.categ_id.name"/>
+                                        </t>
+                                        <t t-else="">-</t>
                                     </td>
                                 </tr>
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">                                 
-                                    <td style="width: 30%;padding: 5px;">
-                                        <span style="color: #494949ff;">Unit Number</span>
-                                    </td>
-                                    <td style="padding: 5px;">
-                                        <span t-field="building_line.product_id.name" style="font-size: 12px;"/>
+
+                                <!-- Unit Number Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
+                                    <td>
+                                        <t t-if="property_line">
+                                            <span t-field="property_line.product_id.name"/>
+                                        </t>
+                                        <t t-else="">-</t>
                                     </td>
                                 </tr>
                                 
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                    <td style="width: 30%;padding: 5px;">
-                                        <span style="color: #494949ff;">Move-in/Move-out Date</span>
-                                    </td>
+                                <!-- Move-in/Move-out Date Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
                                     <td style="padding: 5px;">
                                         <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
                                         to
                                         <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
                                     </td>
                                 </tr>
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                    <td style="width: 30%;padding: 5px;">
-                                        <span style="color: #494949ff;">Rent Term</span>
-                                    </td>
+
+                                <!-- Rent Term Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Term</strong></td>
                                     <td style="padding: 5px;">
                                        <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
                                     </td>
                                 </tr>
 
                                 <!-- Loop through product attributes -->
-                                <t t-if="building_line and building_line.product_id">
-                                    <t t-foreach="building_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                <t t-if="property_line and property_line.product_id">
+                                    <t t-foreach="property_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
                                         <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                            <td style="width: 30%; padding: 5px;">
-                                                <span style="font-size: 12px; color: #494949ff;">
+                                            <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
+                                                <strong>
                                                     <span t-field="attr_value.attribute_id.name"/>
-                                                </span>
+                                                </strong>
                                             </td>
                                             <td style="padding: 5px;">
-                                                <span style="font-size: 12px;">
-                                                    <span t-field="attr_value.name"/>
-                                                </span>
+                                                <span t-field="attr_value.name"/>
                                             </td>
                                         </tr>
                                     </t>
                                 </t>
 
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in </strong></td>
+                                <!-- Requirements Row -->
+                                <tr>
+                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in</strong></td>
                                     <td>
-                                        <t t-if="building_line">
-                                            <span t-field="building_line.product_id.description"/>
+                                        <t t-if="property_line">
+                                            <span t-field="property_line.product_id.description"/>
                                         </t>
                                         <t t-else="">-</t>
                                     </td>
                                 </tr>
-
                             </tbody>
                         </table>
 
@@ -172,7 +174,6 @@
                             Rent Rate
                         </h5>
                         <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
-
                             <tbody>
                                 <t t-foreach="doc.order_line" t-as="line">
                                     <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
@@ -185,7 +186,6 @@
                                     </tr>
                                 </t>
                             </tbody>
-
                         </table>
 
                         <!-- TOTALS SECTION -->
@@ -213,7 +213,7 @@
                                         <td class="text-end" style="padding: 5px;">
                                             <span style="margin: 0; color: #875A7B;">
                                                 <span t-field="doc.amount_total" 
-                                                    t-options='{"": "monetary", "display_currency": doc.currency_id}'/>
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                             </span>
                                         </td>
                                     </tr>
@@ -221,25 +221,6 @@
                             </div>
                         </div>
 
-
-                        <!-- RENTAL TERMS & CONDITIONS -->
-                        <div class="mt-4" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
-                            <h5 style="color: #875A7B; margin-top: 0;">
-                                <i class="fa fa-file-text-o"/> Rental Terms &amp; Conditions
-                            </h5>
-                            <ol style="font-size: 11px; line-height: 1.8; margin-bottom: 0;">
-                                <li><strong>Unit Condition:</strong> The leased unit must be vacated in the same clean and good condition as when turned over. Any damage, loss, or unreported issue will be charged to the tenant.</li>
-                                <li><strong>Late Payment:</strong> A penalty of 5% per day may be applied to overdue rent payments beyond the due date.</li>
-                                <li><strong>Liability:</strong> The tenant is fully responsible for any damage or loss within the unit during the lease period.</li>
-                                <li><strong>Security Deposit:</strong> A security deposit equivalent to two (2) months’ rent is required and refundable after inspection and settlement of all obligations.</li>
-                                <li><strong>Payment:</strong> Full payment for advance rent and deposit must be made prior to move-in. Accepted payments include bank transfer, cash, or check.</li>
-                                <li><strong>Move-in &amp; Move-out:</strong> Dates must be coordinated with management at least three (3) days in advance for proper scheduling.</li>
-                                <li><strong>Cancellation Policy:</strong> Early termination or cancellation forfeits the security deposit unless otherwise agreed in writing by both parties.</li>
-                                <li><strong>Utilities:</strong> Electricity, water, internet, and association dues are for the tenant’s account unless stated otherwise in the agreement.</li>
-                            </ol>
-                        </div>
-
-                        <!-- SIGNATURE SECTION -->
                         <!-- SIGNATURE SECTION - Show if already signed -->
                         <section t-if="doc.signature" id="signature" name="Signature">
                             <div class="row mt-4" name="signature">
