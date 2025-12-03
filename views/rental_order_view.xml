@@ -10,16 +10,17 @@
         <field name="arch" type="xml">
 
             <!-- DEBUG INFO BLOCK -->
-            <!-- <xpath expr="//sheet" position="before">
+            <xpath expr="//sheet" position="before">
                 <div class="alert alert-info" role="alert" style="margin-bottom: 0;">
                     <strong>Debug Info:</strong>
                     <ul>
                         <li>Is In Rental: <field name="is_in_rental" readonly="1"/></li>
                         <li>Is Rental Order: <field name="is_rental_order" readonly="1"/></li>
                         <li>Substate: <field name="substate_name" readonly="1"/></li>
+                        <!-- <li>Lock Field: <field name="is_for_manager_review" readonly="1"/></li> -->
                     </ul>
                 </div>
-            </xpath> -->
+            </xpath>
 
             <!-- CUSTOMIZED BUTTONS -->
             <xpath expr="//header/*[1]" position="before">
@@ -98,7 +99,7 @@
             </xpath>
             
             <!-- Hide Close Button -->
-            <xpath expr="//header/button[@name='449']" position="attributes">
+            <xpath expr="//header/button[@name='399']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 

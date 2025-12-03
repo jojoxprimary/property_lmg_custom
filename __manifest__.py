@@ -5,11 +5,21 @@
     'author': 'Homebrew',
     'category': 'Sales/Rental',
     'data': [
-        'data/mail_template_data.xml',  
+        # Security
+        'security/rental_security.xml',
+        'security/ir.model.access.csv',
+        
+        # Data & Templates
+        'data/mail_template_data.xml',
+        'data/mail_template_rent_proposal.xml',
+        'data/mail_template_review_notification.xml',
+        
+        # Views
+        'views/rental_order_view.xml',
         'views/rent_proposal_template.xml',
         'views/rent_proposal_portal_template.xml',
-        'data/mail_template_rent_proposal.xml',  
-        'views/rental_order_view.xml',
+        
+        # Reports
         'report/rent_agreement_report.xml',
     ],
     'installable': True,

@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -9,6 +10,28 @@ class SaleOrder(models.Model):
     substate_id = fields.Many2one('base.substate', string="Substate")
     substate_name = fields.Char(string="Substate Name", compute="_compute_substate_name", store=False)
     payment_attachment = fields.Binary(string="Proposal Payment Attachment")
+
+    is_for_manager_review = fields.Boolean(
+        string="For Manager Review",
+        compute="_compute_is_for_manager_review",
+        store=False
+    )
+
+    @api.depends('substate_id')
+    def _compute_is_for_manager_review(self):
+        """Boolean becomes True when:
+        - substate is 'For Review'
+        - current user is in group_rental_user
+        """
+        user = self.env.user
+        has_group = user.has_group('property_lmg_custom.group_rental_user')
+
+        for order in self:
+            order.is_for_manager_review = (
+                has_group
+                and order.substate_id
+                and order.substate_id.name == "For Review"
+            )
 
     # TO UPDATE IF IN RENTAL APP CONTEXT
     is_in_rental = fields.Boolean(
@@ -40,16 +63,58 @@ class SaleOrder(models.Model):
     def _compute_substate_name(self):
         for order in self:
             order.substate_name = order.substate_id.name or ''
-
-    # SUBMIT FOR REVIEW BUTTON/ACTION -> FROM PROPOSAL TO FOR REVIEW
+            
     def action_send_for_review(self):
-        """Set substate to 'For Review' only."""
+        """Set substate to 'For Review' and email Rental Managers."""
+        self.ensure_one()
+
+        # 1. Set substate to "For Review"
         substate = self.env['base.substate'].search([
-            ('name', '=', 'For Review'), 
+            ('name', '=', 'For Review'),
             ('model', '=', 'sale.order'),
         ], limit=1)
+
         if substate:
             self.substate_id = substate.id
+
+        # 2. Load the email template
+        template = self.env.ref(
+            "property_lmg_custom.mail_template_rental_review_notification",
+            raise_if_not_found=False
+        )
+        if not template:
+            raise UserError("Email template not found!")
+
+        # 3. Get all users in the rental manager group
+        manager_group = self.env.ref(
+            "property_lmg_custom.group_rental_manager",
+            raise_if_not_found=False
+        )
+
+        if not manager_group:
+            raise UserError("Rental Manager group not found!")
+
+        users = manager_group.users
+        if not users:
+            raise UserError("No users found in Rental Manager group!")
+
+        # 4. Send email to each manager
+        for user in users:
+            if user.partner_id and user.partner_id.email:
+                try:
+                    # Use with_context to set the recipient
+                    template.with_context(
+                        email_to=user.partner_id.email
+                    ).send_mail(
+                        self.id,
+                        force_send=True,
+                        email_values={'email_to': user.partner_id.email}
+                    )
+                except Exception as e:
+                    # Log the error but continue with other users
+                    _logger.error(f"Failed to send email to {user.name}: {str(e)}")
+
+        return True
 
     # SEND PROPOSAL BUTTON/ACTION -> SUBSTATE FROM FOR REVIEW TO PROPOSAL SENT
     def action_send_proposal(self):
