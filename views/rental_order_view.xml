@@ -99,9 +99,9 @@
             </xpath>
             
             <!-- Hide Close Button -->
-            <xpath expr="//header/button[@name='399']" position="attributes">
+            <!-- <xpath expr="//header/button[@name='399']" position="attributes">
                 <attribute name="invisible">1</attribute>
-            </xpath>
+            </xpath> -->
 
             <!-- CUSTOM PILL BADGES -->
             <!-- Custom Pill Badge for Proposal Sent -->
