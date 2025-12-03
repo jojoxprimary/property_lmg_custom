@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_rental_review_notification" model="mail.template">
+            <field name="name">Rental Proposal - Review Notification</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Review Required: Rental Proposal {{ object.name }}</field>
+            <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to"></field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello,
+                        <br/><br/>
+                        A rental proposal has been submitted for your review.
+                        <br/><br/>
+                        
+                        <strong>Proposal Number:</strong> <t t-out="object.name or ''">SO00X</t><br/>
+                        <strong>Customer:</strong> <t t-out="object.partner_id.name or ''">Customer</t><br/>
+                        <strong>Amount:</strong> <t t-out="'{:,.2f}'.format(object.amount_total or 0.0)">0.00</t> <t t-out="object.currency_id.name or ''">USD</t><br/>
+                        <br/>
+                        
+                        <a t-attf-href="/odoo/rental/{{object.id}}" 
+                           style="background-color: #875A7B; padding: 10px 20px; text-decoration: none; color: #fff; border-radius: 5px; display: inline-block;">
+                            Review Proposal Now
+                        </a>
+                        <br/><br/>
+                        
+                        Please review this proposal at your earliest convenience.
+                        <br/><br/>
+                        
+                        Best regards,<br/>
+                        <t t-out="object.company_id.name or ''">Company</t>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

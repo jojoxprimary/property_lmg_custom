@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rental Application Category -->
+    <record id="module_category_rental_lmg" model="ir.module.category">
+        <field name="name">Rental Management LMG</field>
+        <field name="description">Custom Rental Management for LMG</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Rental User Group - Can create and submit proposals -->
+    <record id="group_rental_user" model="res.groups">
+        <field name="name">Rental User</field>
+        <field name="category_id" ref="module_category_rental_lmg"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can create and submit rental proposals for review</field>
+    </record>
+
+    <!-- Rental Manager Group - Can review and approve proposals -->
+    <record id="group_rental_manager" model="res.groups">
+        <field name="name">Rental Manager</field>
+        <field name="category_id" ref="module_category_rental_lmg"/>
+        <field name="implied_ids" eval="[(4, ref('group_rental_user'))]"/>
+        <field name="comment">Can review, approve and send rental proposals to customers</field>
+    </record>
+</odoo>
