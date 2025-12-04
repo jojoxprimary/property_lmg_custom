@@ -79,145 +79,164 @@
                         </div>
 
                         <!-- INFO -->
-                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
-                            Rent Details
-                        </h5>
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Details
+                            </h5>
 
-                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
-                            <tbody> 
-                                <!-- Address Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
-                                    <td style="padding: 5px;">
-                                        <t t-if="property_line and property_line.product_id.categ_id">
-                                            <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
-                                            <!-- Get the second part (index 1) if it exists, which should be the address -->
-                                            <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else '-'"/>
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
+                                <tbody> 
+                                    <!-- Address Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="property_line and property_line.product_id.categ_id">
+                                                <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
+                                                <!-- Get the second part (index 1) if it exists, which should be the address -->
+                                                <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else '-'"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Building Name Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
+                                        <td>
+                                            <t t-if="property_line and property_line.product_id.categ_id">
+                                                <!-- Get the third part (index 2) if it exists, which should be the building name -->
+                                                <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
+                                                <span t-esc="address_parts[2].strip() if len(address_parts) > 2 else property_line.product_id.categ_id.name"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Unit Number Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
+                                        <td>
+                                            <t t-if="property_line">
+                                                <span t-field="property_line.product_id.name"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Move-in/Move-out Date Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
+                                            to
+                                            <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Rent Term Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Term</strong></td>
+                                        <td style="padding: 5px;">
+                                        <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
+                                        </td>
+                                    </tr>
+
+                                    <!-- Loop through product attributes -->
+                                    <t t-if="property_line and property_line.product_id">
+                                        <t t-foreach="property_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                            <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                                <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
+                                                    <strong>
+                                                        <span t-field="attr_value.attribute_id.name"/>
+                                                    </strong>
+                                                </td>
+                                                <td style="padding: 5px;">
+                                                    <span t-field="attr_value.name"/>
+                                                </td>
+                                            </tr>
                                         </t>
-                                        <t t-else="">-</t>
-                                    </td>
-                                </tr>
+                                    </t>
 
-                                <!-- Building Name Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
-                                    <td>
-                                        <t t-if="property_line and property_line.product_id.categ_id">
-                                            <!-- Get the third part (index 2) if it exists, which should be the building name -->
-                                            <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
-                                            <span t-esc="address_parts[2].strip() if len(address_parts) > 2 else property_line.product_id.categ_id.name"/>
-                                        </t>
-                                        <t t-else="">-</t>
-                                    </td>
-                                </tr>
+                                    <!-- Requirements Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in</strong></td>
+                                        <td>
+                                            <t t-if="property_line">
+                                                <span t-field="property_line.product_id.description"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                                <!-- Unit Number Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
-                                    <td>
-                                        <t t-if="property_line">
-                                            <span t-field="property_line.product_id.name"/>
-                                        </t>
-                                        <t t-else="">-</t>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Move-in/Move-out Date Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
-                                    <td style="padding: 5px;">
-                                        <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
-                                        to
-                                        <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
-                                    </td>
-                                </tr>
-
-                                <!-- Rent Term Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Term</strong></td>
-                                    <td style="padding: 5px;">
-                                       <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
-                                    </td>
-                                </tr>
-
-                                <!-- Loop through product attributes -->
-                                <t t-if="property_line and property_line.product_id">
-                                    <t t-foreach="property_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
-                                        <tr style="border-bottom: 1px solid #e6dee4ff;">
-                                            <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
-                                                <strong>
-                                                    <span t-field="attr_value.attribute_id.name"/>
-                                                </strong>
+                        <!-- RENTAL ITEMS TABLE -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
+                                Rent Rate
+                            </h5>
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
+                                            <td style="width: 30%;padding: 5px;">
+                                                <t t-set="desc_parts" t-value="line.name.split('\n')"/>
+                                                
+                                                <!-- Product Name (Bold) -->
+                                                <div style="color: #494949ff; font-weight: bold;">
+                                                    <span t-esc="desc_parts[0]"/>
+                                                </div>
+                                                
+                                                <!-- Additional Description (Italic) -->
+                                                <t t-if="len(desc_parts) > 1">
+                                                    <t t-foreach="desc_parts[1:]" t-as="desc_line">
+                                                        <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
+                                                            <span t-esc="desc_line"/>
+                                                        </div>
+                                                    </t>
+                                                </t>
                                             </td>
-                                            <td style="padding: 5px;">
-                                                <span t-field="attr_value.name"/>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' />
                                             </td>
                                         </tr>
                                     </t>
-                                </t>
+                                </tbody>
+                            </table>
+                        
 
-                                <!-- Requirements Row -->
-                                <tr>
-                                    <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in</strong></td>
-                                    <td>
-                                        <t t-if="property_line">
-                                            <span t-field="property_line.product_id.description"/>
-                                        </t>
-                                        <t t-else="">-</t>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <!-- RENTAL ITEMS TABLE -->
-                        <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
-                            Rent Rate
-                        </h5>
-                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
-                            <tbody>
-                                <t t-foreach="doc.order_line" t-as="line">
-                                    <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
-                                        <td style="width: 30%;padding: 5px;">
-                                            <span t-field="line.name" style="color: #494949ff;"/>
-                                        </td>
-                                        <td style="padding: 5px; text-align: right;">
-                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' />
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-
-                        <!-- TOTALS SECTION -->
-                        <div class="row justify-content-end mt-4">
-                            <div class="col-5">
-                                <table class="table table-sm">
-                                    <tr style="font-size: 12px;">
-                                        <td style="padding: 4px;"><strong>Subtotal:</strong></td>
-                                        <td class="text-end" style="padding: 4px;">
-                                            <span t-field="doc.amount_untaxed" 
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr style="font-size: 12px;">
-                                        <td style="padding: 4px;"><strong>Taxes:</strong></td>
-                                        <td class="text-end" style="padding: 4px;">
-                                            <span t-field="doc.amount_tax" 
-                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr style="font-size: 15px;">
-                                        <td style="padding: 6px;">
-                                            <span style="margin: 0; color: #875A7B;">Total:</span>
-                                        </td>
-                                        <td class="text-end" style="padding: 5px;">
-                                            <span style="margin: 0; color: #875A7B;">
-                                                <span t-field="doc.amount_total" 
+                            <!-- TOTALS SECTION -->
+                            <div class="row justify-content-end mt-4">
+                                <div class="col-5">
+                                    <table class="table table-sm">
+                                        <tr style="font-size: 12px;">
+                                            <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                            <td class="text-end" style="padding: 4px;">
+                                                <span t-field="doc.amount_untaxed" 
                                                     t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr style="font-size: 12px;">
+                                            <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                            <td class="text-end" style="padding: 4px;">
+                                                <span t-field="doc.amount_tax" 
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr style="font-size: 15px;">
+                                            <td style="padding: 6px;">
+                                                <span style="margin: 0; color: #875A7B;">Total:</span>
+                                            </td>
+                                            <td class="text-end" style="padding: 5px;">
+                                                <span style="margin: 0; color: #875A7B;">
+                                                    <span t-field="doc.amount_total" 
+                                                        t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 

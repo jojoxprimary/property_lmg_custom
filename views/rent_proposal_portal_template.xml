@@ -153,7 +153,14 @@
                         <t t-foreach="sale_order.order_line" t-as="line">
                             <tr>
                                 <td style="width: 30%; background-color: #f8f9fa;">
-                                    <strong><span t-field="line.name"/></strong>
+                                    <t t-set="lines" t-value="line.name.split('\n')"/>
+                                    <strong><span t-esc="lines[0]"/></strong>
+                                    <t t-if="len(lines) > 1">
+                                        <br/>
+                                        <t t-foreach="lines[1:]" t-as="desc_line">
+                                            <em><span t-esc="desc_line"/></em><br/>
+                                        </t>
+                                    </t>
                                 </td>
                                 <td class="text-end">
                                     <span t-field="line.price_unit"/>
