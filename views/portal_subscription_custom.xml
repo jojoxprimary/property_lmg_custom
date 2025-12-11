@@ -5,11 +5,25 @@
               name="Custom Portal Subscriptions List" 
               inherit_id="sale_subscription.portal_my_subscriptions">
         
-        <!-- Optional: Add a note/message at the top -->
+        <!-- Add a note at the top for test view -->
         <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
             <div class="alert alert-info mt-3">
                 <strong>Note:</strong> TEST - for custom subscription view.
             </div>
+        </xpath>
+
+        <!-- Customize the Subscription name column with first product name -->
+        <xpath expr="//t[@t-foreach='subscriptions']//tr/td[1]/a" position="replace">
+            <a t-att-href="sale_order.get_portal_url()">
+                <t t-set="first_product" t-value="sale_order.order_line[0].product_id.sudo().name if sale_order.order_line else ''"/>
+                <t t-esc="first_product + '-' + sale_order.display_name"/>
+            </a>
+        </xpath>
+        
+        <!-- Customize the Total amount to show recurring_monthly_total instead -->
+        <xpath expr="//t[@t-foreach='subscriptions']//tr/td[4]/span" position="replace">
+            <span t-out="sale_order.recurring_monthly_total" 
+                  t-options="{'widget': 'monetary', 'display_currency': sale_order.currency_id}"/>
         </xpath>
         
     </template>

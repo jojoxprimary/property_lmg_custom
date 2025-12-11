@@ -267,6 +267,7 @@ class SaleOrder(models.Model):
                     subject=_("Portal Access Error")
                 )
 
+    # Custom recurring monthly total field
     recurring_monthly_total = fields.Monetary(
         string="Monthly Recurring Total",
         compute="_compute_recurring_monthly_total",
@@ -279,7 +280,7 @@ class SaleOrder(models.Model):
     def _compute_recurring_monthly_total(self):
         """Calculate total of ONLY recurring/subscription products"""
         for order in self:
-            # Filter lines where product is marked as recurring
+            # Filter lines for product with recurring_invoice
             recurring_lines = order.order_line.filtered(
                 lambda line: line.product_id.recurring_invoice
             )
