@@ -1,7 +1,7 @@
 {
     'name': 'Property LMG Rental Substate Custom',
     'version': '1.0',
-    'depends': ['sale_renting', 'sale_subscription', 'sale_management', 'base_substate', 'sale_substate', 'stock', 'crm', 'accountant'],
+    'depends': ['sale_renting', 'sale_subscription', 'sale_management', 'base_substate', 'sale_substate', 'stock', 'crm', 'accountant', 'helpdesk'],
     'author': 'Homebrew',
     'category': 'Sales/Rental',
     'data': [
@@ -12,6 +12,7 @@
         # Views templates
         'views/rent_proposal_template.xml',
         'views/rent_proposal_portal_template.xml',
+        'views/portal_subscription_custom.xml',
         
         # Data & Templates
         'data/mail_template_data.xml',

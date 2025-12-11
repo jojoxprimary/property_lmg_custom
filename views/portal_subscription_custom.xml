@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Customize Portal Subscription List Page -->
+    <template id="portal_my_subscriptions_custom" 
+              name="Custom Portal Subscriptions List" 
+              inherit_id="sale_subscription.portal_my_subscriptions">
+        
+        <!-- Optional: Add a note/message at the top -->
+        <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
+            <div class="alert alert-info mt-3">
+                <strong>Note:</strong> TEST - for custom subscription view.
+            </div>
+        </xpath>
+        
+    </template>
+</odoo>

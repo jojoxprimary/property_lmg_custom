@@ -136,9 +136,9 @@
                                     <!-- Rent Term Row -->
                                     <tr>
                                         <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Term</strong></td>
-                                        <td style="padding: 5px;">
-                                        <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
-                                        </td>
+                                            <td style="padding: 5px;">
+                                                <span t-esc="int(round(doc.duration_days / 30))"/> month(s)
+                                            </td>
                                     </tr>
 
                                     <!-- Loop through product attributes -->

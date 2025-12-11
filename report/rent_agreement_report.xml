@@ -226,7 +226,32 @@
                             </table>
                         </div>
 
-                        <!-- Section 4: Rent Details -->
+                        <!-- Section 4: Rent Inclusion -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Inclusion
+                            </h5>
+                            <table class="table table-sm table-bordered mt-3" style="font-size: 12px;">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th style="padding: 5px;">Parking Slot Number</th>
+                                        <th style="padding: 5px;">Access Keys</th>
+                                        <th style="padding: 5px;">Other</th>
+                                        <th style="padding: 5px;">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height: 30px;">
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Section 5: Rent Details -->
                         <div style="page-break-inside: avoid;">
                             <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
                                 Rent Details
@@ -284,7 +309,7 @@
                                             <span style="color: #494949ff;">Rent Term</span>
                                         </td>
                                         <td style="padding: 5px;">
-                                            <span t-esc="round(doc.duration_days / 30, 1)"/> month(s)
+                                            <span t-esc="int(round(doc.duration_days / 30))"/> month(s)
                                         </td>
                                     </tr>
         
@@ -319,7 +344,7 @@
                             </table>
                         </div>
 
-                        <!-- Section 5: Rent Rate -->
+                        <!-- Section 6: Rent Rate -->
                         <div style="page-break-inside: avoid;">
                             <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
                                 Rent Rate
@@ -384,32 +409,6 @@
                                     </tr>
                                 </table>
                             </div>
-                        </div>
-
-
-                        <!-- Section 6: Rent Inclusion -->
-                        <div style="page-break-inside: avoid;">
-                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
-                                Rent Inclusion
-                            </h5>
-                            <table class="table table-sm table-bordered mt-3" style="font-size: 12px;">
-                                <thead style="background-color: #f8f9fa;">
-                                    <tr>
-                                        <th style="padding: 5px;">Parking Slot Number</th>
-                                        <th style="padding: 5px;">Access Keys</th>
-                                        <th style="padding: 5px;">Other</th>
-                                        <th style="padding: 5px;">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="height: 30px;">
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
 
                         <!-- Section 7: Terms and Conditions -->

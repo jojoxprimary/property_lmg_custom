@@ -24,6 +24,6 @@ class MailComposer(models.TransientModel):
                 if proposal_sent_substate:
                     sale_orders.write({'substate_id': proposal_sent_substate.id})
                 else:
-                    raise UserError("Substate 'Waiting for Signature' not found. Please configure it in Base Substates.")
+                    raise UserError("Substate 'Proposal Sent' not found. Please configure it in Base Substates.")
         
         return result

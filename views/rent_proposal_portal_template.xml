@@ -112,7 +112,7 @@
                         <tr>
                             <td style="background-color: #f8f9fa;"><strong>Rent Term</strong></td>
                             <td>
-                                <span t-esc="round(sale_order.duration_days / 30, 1)"/> month(s)
+                                <span t-esc="int(round(sale_order.duration_days / 30))"/> month(s)
                             </td>
                         </tr>
 
