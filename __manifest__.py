@@ -13,6 +13,7 @@
         'views/rent_proposal_template.xml',
         'views/rent_proposal_portal_template.xml',
         'views/portal_subscription_custom.xml',
+        'views/portal_invoice_custom.xml',
         
         # Data & Templates
         'data/mail_template_data.xml',
