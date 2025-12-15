@@ -17,10 +17,11 @@ class RentalCustomerPortal(CustomerPortal):
 
         # Use custom rental report for orders created in rental app
         if report_type == 'pdf' and order_sudo.is_rental_order:
-            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False)
+            # Use sudo() to bypass permission checks for the report
+            pdf_report = request.env.ref('property_lmg_custom.action_report_rental_quotation', raise_if_not_found=False).sudo()
             
             if pdf_report:
-                # Generate PDF content
+                # Generate PDF content using sudo() to bypass access rights
                 pdf_content, _ = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
                     pdf_report.report_name,
                     [order_sudo.id]
