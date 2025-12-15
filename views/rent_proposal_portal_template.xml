@@ -68,7 +68,7 @@
                     <tbody>
                         <tr>
                             <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
-                            <td style="padding: 5px;">
+                            <td>
                                 <t t-if="property_line and property_line.product_id.categ_id">
                                     <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
                                     <!-- Get the second part (index 1) if it exists, which should be the address -->
@@ -113,6 +113,7 @@
                             <td style="background-color: #f8f9fa;"><strong>Rent Term</strong></td>
                             <td>
                                 <span t-esc="int(round(sale_order.duration_days / 30))"/> month(s)
+                                
                             </td>
                         </tr>
 
@@ -125,7 +126,7 @@
                                             <span t-field="attr_value.attribute_id.name"/>
                                         </strong>
                                     </td>
-                                    <td style="padding: 5px;">
+                                    <td>
                                         <span t-field="attr_value.name"/>
                                     </td>
                                 </tr>
