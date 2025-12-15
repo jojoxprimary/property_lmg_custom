@@ -6,11 +6,11 @@
               inherit_id="sale_subscription.portal_my_subscriptions">
         
         <!-- Add a note at the top for test view -->
-        <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
+        <!-- <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
             <div class="alert alert-info mt-3">
                 <strong>Note:</strong> TEST - for custom subscription view.
             </div>
-        </xpath>
+        </xpath> -->
 
         <!-- Customize the Subscription name column with first product name -->
         <xpath expr="//t[@t-foreach='subscriptions']//tr/td[1]/a" position="replace">
