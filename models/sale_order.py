@@ -209,64 +209,6 @@ class SaleOrder(models.Model):
         # Return the standard quotation/order print action
         return self.env.ref('property_lmg_custom.action_report_rent_agreement').report_action(self)
     
-    def action_confirm(self):
-        """Override to auto-create portal user when order is confirmed."""
-        # Call parent method first to confirm the order
-        res = super(SaleOrder, self).action_confirm()
-        
-        # Create portal access for customers who don't have it yet
-        self._create_portal_user_if_needed()
-        
-        return res
-    
-    def _create_portal_user_if_needed(self):
-        """Create portal user for customer if they don't have one yet."""
-        for order in self:
-            partner = order.partner_id
-            
-            # Check if partner already has a user account
-            if partner.user_ids:
-                _logger.info(f"Portal user already exists for {partner.name} on order {order.name}")
-                continue
-            
-            # Check if partner has an email
-            if not partner.email:
-                _logger.warning(f"Cannot create portal user for {partner.name} on order {order.name}: No email address")
-                order.message_post(
-                    body=_("Portal access not created: Customer has no email address"),
-                    subject=_("Portal Access - Missing Email")
-                )
-                continue
-                
-            try:
-                # Get portal group
-                group_portal = self.env.ref('base.group_portal')
-                
-                # Create portal user
-                user = self.env['res.users'].sudo().create({
-                    'name': partner.name,
-                    'login': partner.email,
-                    'email': partner.email,
-                    'partner_id': partner.id,
-                    'groups_id': [(6, 0, [group_portal.id])],
-                    'notification_type': 'email',
-                })
-                
-                # Log success
-                order.message_post(
-                    body=_("Portal access granted to %s (%s)") % (partner.name, partner.email),
-                    subject=_("Portal Access Created")
-                )
-                
-                _logger.info(f"Portal user created for {partner.name} ({partner.email}) on order {order.name}")
-                
-            except Exception as e:
-                _logger.error(f"Failed to create portal access for {partner.name}: {str(e)}")
-                order.message_post(
-                    body=_("Failed to create portal access: %s") % str(e),
-                    subject=_("Portal Access Error")
-                )
-
     # Custom recurring monthly total field
     recurring_monthly_total = fields.Monetary(
         string="Monthly Recurring Total",
