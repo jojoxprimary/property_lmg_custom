@@ -236,3 +236,18 @@ class SaleOrder(models.Model):
                 f"Recurring lines: {len(recurring_lines)}, "
                 f"Recurring total: {order.recurring_monthly_total}"
             )
+    
+    # Convert rental duration from days to months for display
+    duration_months = fields.Float(
+        string='Duration',
+        compute='_compute_duration_months',
+        store=True
+    )
+
+    @api.depends('duration_days')
+    def _compute_duration_months(self):
+        for order in self:
+            if order.duration_days:
+                order.duration_months = int(round(order.duration_days / 30.0))
+            else:
+                order.duration_months = 0

@@ -486,19 +486,48 @@
                             </ol>
                         </div>
 
-                        <!-- Signatures -->
-                        <div class="row mt-5">
-                            <div class="col-6" style="text-align: center;">
-                                <p>_______________________</p>
-                                <p><strong>Landlord Signature</strong></p>
-                                <p style="font-size: 12px;">Date: _______________</p>
+
+                    <section id="signature" name="Signature">
+                        <div class="row mt-2" name="signature">
+                            <!-- Company Representatives Column (Left) -->
+                            <div class="col-6">
+                                <!-- Leasing Supervisor -->
+                                <div style="text-align: center; margin-bottom: 20px;">
+                                    <h5 style="margin-bottom: 5px;">Leasing Supervisor</h5>
+                                    <img src="/property_lmg_custom/static/img/sample_signature.png" 
+                                        style="max-height: 2.5rem; max-width: 100%;"/>
+                                    <p style="margin-top: 2px; margin-bottom: 5px;">
+                                        <strong>Name:</strong> Lady Mabelle Dignadice <br/>
+                                        <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                    </p>
+                                </div>
+                                
+                                <!-- Operations Manager -->
+                                <div style="text-align: center;">
+                                    <h5 style="margin-bottom: 5px;">Operations Manager</h5>
+                                    <img src="/property_lmg_custom/static/img/sample_signature.png" 
+                                        style="max-height: 2.5rem; max-width: 100%;"/>
+                                    <p style="margin-top: 2px; margin-bottom: 5px;">
+                                        <strong>Name:</strong> Michelle S. Cutang <br/>
+                                        <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="col-6" style="text-align: center;">
-                                <p>_______________________</p>
-                                <p><strong>Tenant Signature</strong></p>
-                                <p style="font-size: 12px;">Date: _______________</p>
+                            
+                            <!-- Client Signature Column (Right) -->
+                            <div class="col-6">
+                                <div style="text-align: center;">
+                                    <h5 style="margin-bottom: 5px;">Client Signature</h5>
+                                    <div style="border-bottom: 1px solid #000; height: 2.5rem; margin: 5px auto; max-width: 80%;"></div>
+                                    <p style="margin-top: 15px; margin-bottom: 5px;">
+                                        <strong>Name:</strong> _______________________<br/>
+                                        <strong>Date:</strong> _______________________
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    </section>
+
                     </div>
                 </t>
             </t>

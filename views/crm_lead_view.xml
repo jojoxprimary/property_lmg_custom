@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add fields to CRM Lead Form View -->
+    <record id="crm_lead_view_form_inherit_rental" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.rental</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Rename Salesperson field -->
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Leasing Officer</attribute>
+            </xpath>
+            <!-- Agent Field -->
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="contact_id"/>
+            </xpath>
+
+            <!-- Change New Quotation to btn-secondary and rename -->
+            <xpath expr="//button[@name='action_sale_quotations_new']" position="attributes">
+                <attribute name="class">btn btn-secondary</attribute>
+                <attribute name="string">New Sales Quotation</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Customize rental button -->
+    <record id="crm_lead_view_form_rental_button_customize" model="ir.ui.view">
+        <field name="name">crm.lead.form.rental.button.customize</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="sale_renting_crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_rental_quotations_new']" position="attributes">
+                <attribute name="string">New Rental Quotation</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+    
+   <record id="crm_lead_view_list_inherit_rental" model="ir.ui.view">
+        <field name="name">crm.lead.list.inherit.rental</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Leasing Officer</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

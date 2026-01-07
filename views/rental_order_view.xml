@@ -114,7 +114,22 @@
             </xpath>
 
             <!-- CUSTOM FIELDS -->
+            <!-- Change rental duration display from days to months -->
+            <xpath expr="//label[@for='duration_days']" position="replace">
+                <label for="duration_months" string="Duration" invisible="not is_rental_order and not rental_start_date"/>
+            </xpath>
 
+            <xpath expr="//div[@class='o_row'][field[@name='duration_days']]" position="replace">
+                <div class="o_row" invisible="not is_rental_order and not rental_start_date">
+                    <field class="oe_inline" style="max-width: 3rem" name="duration_months" invisible="duration_months == 0"/>
+                    <span invisible="duration_months != 1"> month </span>
+                    <span invisible="duration_months in [0,1]"> months </span>
+                    <span invisible="duration_months == 0 or remaining_hours == 0">and </span>
+                    <field class="oe_inline" style="max-width: 2rem" name="remaining_hours" invisible="remaining_hours == 0"/>
+                    <span invisible="remaining_hours != 1"> hour </span>
+                    <span invisible="remaining_hours in [0,1]"> hours </span>
+                </div>
+            </xpath>
         </field>
     </record>
 

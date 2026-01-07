@@ -240,26 +240,42 @@
                             </div>
                         </div>
 
-                        <!-- SIGNATURE SECTION - Show if already signed -->
-                        <section t-if="doc.signature" id="signature" name="Signature">
+                        <section id="signature" name="Signature">
                             <div class="row mt-4" name="signature">
                                 <div class="col-6">
                                     <div style="text-align: center;">
-                                        <h5>Company Representative</h5>
+                                        <h5>Leasing Supervisor</h5>
+                                        <img src="/property_lmg_custom/static/img/sample_signature.png" 
+                                            style="max-height: 3rem; max-width: 100%;"/>
                                         <p style="margin-top: 5px;">
-                                            <strong>Name:</strong> <span t-field="doc.user_id.name"/><br/>
-                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                            <strong>Name:</strong> Lady Mabelle Dignadice <br/>
+                                             <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
                                         </p>
                                     </div>
                                 </div>
                                 
                                 <div class="col-6">
                                     <div style="text-align: center;">
-                                        <h5>Customer Signature</h5>
-                                        <img t-att-src="image_data_uri(doc.signature)" style="max-height: 3rem; max-width: 100%;"/>
+                                        <h5>Operations Manager</h5>
+                                        <img src="/property_lmg_custom/static/img/sample_signature.png" 
+                                            style="max-height: 3rem; max-width: 100%;"/>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> Michelle S. Cutang <br/>
+                                             <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Client Signature (centered below, only if signed) -->
+                            <div class="row mt-4" t-if="doc.signature" name="client_signature">
+                                <div class="col-12">
+                                    <div style="text-align: center;">
+                                        <h5>Client Signature</h5>
+                                        <img t-att-src="image_data_uri(doc.signature)" 
+                                            style="max-height: 3rem; max-width: 100%;"/>
                                         <p style="margin-top: 5px;">
                                             <strong>Name:</strong> <span t-field="doc.signed_by"/><br/>
-                                            <strong>Date:</strong> <span t-field="doc.signed_on" t-options='{"widget": "datetime"}'/>
+                                            <strong>Date:</strong> <span t-field="doc.signed_on" t-options='{"widget": "date"}'/>
                                         </p>
                                     </div>
                                 </div>
