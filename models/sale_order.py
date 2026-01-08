@@ -9,7 +9,6 @@ class SaleOrder(models.Model):
 
     substate_id = fields.Many2one('base.substate', string="Substate")
     substate_name = fields.Char(string="Substate Name", compute="_compute_substate_name", store=False)
-    payment_attachment = fields.Binary(string="Proposal Payment Attachment")
 
     is_for_manager_review = fields.Boolean(
         string="For Manager Review",
@@ -251,3 +250,52 @@ class SaleOrder(models.Model):
                 order.duration_months = int(round(order.duration_days / 30.0))
             else:
                 order.duration_months = 0
+
+    # For auto compute advance rent and security deposit depending on monthly rental price
+    @api.onchange('order_line')
+    def _onchange_rental_prices(self):
+        """ Auto-update Security Deposit and Advance Rent prices 
+            based on Monthly Rental price   """
+        # if no order lines, skip
+        if not self.order_line:
+            return
+
+         # Find Monthly Rental line by internal reference (default_code)
+        monthly_rental_line = self.order_line.filtered(lambda l: l.product_id.default_code == 'MONTHLY_RENTAL')
+        if not monthly_rental_line:
+            return
+
+        # Get the monthly rental price
+        monthly_price = monthly_rental_line[0].price_unit
+
+        # Skip if monthly price is 0 or not set
+        if not monthly_price or monthly_price <= 0:
+            return
+
+        # Update Security Deposit (2x monthly rent)
+        security_deposit_lines = self.order_line.filtered(lambda l: l.product_id.default_code == 'SECURITY_DEPOSIT')
+
+        for line in security_deposit_lines:
+            if line.price_unit != monthly_price * 2:
+                line.price_unit = monthly_price * 2
+                _logger.info(f"Updated Security Deposit line to {line.price_unit}")
+
+        # Update Advance Rent (1x monthly rent)
+        advance_rent_lines = self.order_line.filtered(lambda l: l.product_id.default_code == 'ADVANCE_RENT')
+
+        for line in advance_rent_lines:
+            if line.price_unit != monthly_price * 1:
+                line.price_unit = monthly_price * 1
+                _logger.info(f"Updated Advance Rent line to {line.price_unit}")
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+    
+    @api.onchange('price_unit')
+    def _onchange_price_unit_rental(self):
+        """
+        Trigger parent order's price update when monthly rental price changes
+        """
+        if self.product_id and self.product_id.default_code == 'MONTHLY_RENTAL':
+            if self.order_id:
+                self.order_id

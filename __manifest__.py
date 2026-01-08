@@ -19,6 +19,7 @@
         'data/mail_template_data.xml',
         'data/mail_template_rent_proposal.xml',
         'data/mail_template_review_notification.xml',
+        'data/rental_products.xml',
 
         # Views
         'views/rental_order_view.xml',
