@@ -28,7 +28,7 @@
                                 <td><span t-field="sale_order.date_order" t-options='{"widget": "date"}'/></td>
                             </tr>
                             <tr>
-                                <td><strong>Salesperson</strong></td>
+                                <td><strong>Leasing Officer</strong></td>
                                 <td><span t-field="sale_order.user_id.name"/></td>
                             </tr>
                             <tr>
