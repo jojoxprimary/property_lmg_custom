@@ -178,6 +178,28 @@ class SaleOrder(models.Model):
         return action
 
     # MAKE CUSTOM PROPOSAL TEMPLATE THE ONE USED FOR SIGNING AND DOWNLOADING IN PORTAL
+    def _get_default_report_action(self):
+        """Override to use custom rental report for rental orders in all states."""
+        self.ensure_one()
+        
+        _logger.info(f"="*60)
+        _logger.info(f"_get_default_report_action called")
+        _logger.info(f"Order: {self.name}, State: {self.state}, is_rental: {self.is_rental_order}")
+        
+        if self.is_rental_order:
+            report = self.env.ref('property_lmg_custom.action_report_rental_quotation')
+            _logger.info(f"✓ USING CUSTOM RENTAL REPORT")
+            _logger.info(f"  Report ID: {report.id}")
+            _logger.info(f"  Report Name: {report.name}")
+            _logger.info(f"  Report Technical Name: {report.report_name}")
+            _logger.info(f"="*60)
+            return report
+        
+        default = super()._get_default_report_action()
+        _logger.info(f"✗ Using default report: {default.report_name if default else 'None'}")
+        _logger.info(f"="*60)
+        return default
+    
     def _get_name_portal_content_view(self):
         """Override to use custom portal HTML template for rental orders"""
         self.ensure_one()
@@ -189,17 +211,15 @@ class SaleOrder(models.Model):
         """Set custom filename for downloaded PDFs"""
         self.ensure_one()
         
-        _logger.info(f"Filename for {self.name} - is_in_rental: {self.is_in_rental}")
+        _logger.info(f"_get_report_base_filename called for {self.name} - is_rental: {self.is_rental_order}")
         
-        # Use is_in_rental since report_name is not available in portal context
         if self.is_rental_order:
-            filename = 'Rental_Proposal_%s' % (self.name)
+            filename = f'Rental_Proposal_{self.name}'
             _logger.info(f"Using rental filename: {filename}")
             return filename
         
-        _logger.info(f"Using default filename")
+        _logger.info("Using default filename")
         return super()._get_report_base_filename()
-
 
     def action_download_contract(self):
         """Download contract PDF."""
@@ -299,3 +319,101 @@ class SaleOrderLine(models.Model):
         if self.product_id and self.product_id.default_code == 'MONTHLY_RENTAL':
             if self.order_id:
                 self.order_id
+
+from odoo import models
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+    
+    def _get_default_report_action(self):
+        """Override to use custom rental report for rental orders in all states."""
+        self.ensure_one()
+        
+        _logger.info(f"="*60)
+        _logger.info(f"_get_default_report_action called")
+        _logger.info(f"Order: {self.name}, State: {self.state}, is_rental: {self.is_rental_order}")
+        
+        if self.is_rental_order:
+            report = self.env.ref('property_lmg_custom.action_report_rental_quotation')
+            _logger.info(f"✓ USING CUSTOM RENTAL REPORT")
+            _logger.info(f"  Report ID: {report.id}")
+            _logger.info(f"  Report Name: {report.name}")
+            _logger.info(f"  Report Technical Name: {report.report_name}")
+            _logger.info(f"="*60)
+            return report
+        
+        default = super()._get_default_report_action()
+        _logger.info(f"✗ Using default report: {default.report_name if default else 'None'}")
+        _logger.info(f"="*60)
+        return default
+    
+    def get_portal_url(self, *args, **kwargs):
+        """Override portal URL generation if needed."""
+        _logger.info(f"get_portal_url called for {self.name}")
+        return super().get_portal_url(*args, **kwargs)
+    
+    def _get_name_portal_content_view(self):
+        """Override to use custom portal HTML template for rental orders"""
+        self.ensure_one()
+        if self.is_rental_order:
+            return 'property_lmg_custom.rent_proposal_portal_content'
+        return super()._get_name_portal_content_view()
+
+    def _get_report_base_filename(self):
+        """Set custom filename for downloaded PDFs"""
+        self.ensure_one()
+        
+        _logger.info(f"_get_report_base_filename called for {self.name} - is_rental: {self.is_rental_order}")
+        
+        if self.is_rental_order:
+            filename = f'Rental_Proposal_{self.name}'
+            _logger.info(f"Using rental filename: {filename}")
+            return filename
+        
+        _logger.info("Using default filename")
+        return super()._get_report_base_filename()
+
+
+class IrActionsReport(models.Model):
+    _inherit = 'ir.actions.report'
+    
+    def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
+        """Intercept and redirect rental order reports"""
+        
+        # Get the report record
+        if isinstance(report_ref, str):
+            report = self.env.ref(report_ref, raise_if_not_found=False) or self._get_report(report_ref)
+        else:
+            report = report_ref
+        
+        # Check if it's a sale order report
+        if report and report.model == 'sale.order' and res_ids:
+            orders = self.env['sale.order'].browse(res_ids)
+            
+            # If ANY order is a rental order, use the custom report
+            if any(order.is_rental_order for order in orders):
+                rental_report = self.env.ref('property_lmg_custom.action_report_rental_quotation', 
+                                             raise_if_not_found=False)
+                
+                if rental_report:
+                    _logger.info(f"🔄 REDIRECTING TO RENTAL REPORT")
+                    _logger.info(f"   Original: {report.report_name}")
+                    _logger.info(f"   New: {rental_report.report_name}")
+                    
+                    # Use the rental report instead
+                    return super()._render_qweb_pdf(rental_report, res_ids, data)
+            
+            # Log what's being rendered
+            for order in orders:
+                _logger.info(f"🎯 RENDERING PDF REPORT")
+                _logger.info(f"   Order: {order.name}")
+                _logger.info(f"   Is Rental: {order.is_rental_order}")
+                _logger.info(f"   Report Being Used: {report.report_name}")
+                _logger.info(f"   Report Display Name: {report.name}")
+                _logger.info(f"   Report ID: {report.id}")
+        
+        return super()._render_qweb_pdf(report_ref, res_ids, data)
