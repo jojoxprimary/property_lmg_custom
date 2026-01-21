@@ -240,6 +240,21 @@
                             </div>
                         </div>
 
+                        <!-- TERMS AND CONDITIONS / NOTES SECTION -->
+                        <div style="page-break-inside: avoid; margin-top: 30px;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                Terms and Conditions
+                            </h5>
+                            <div style="font-size: 12px; padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; margin-top: 10px;">
+                                <p style="margin: 5px 0;">
+                                    • Non-refundable advance rent payment.
+                                </p>
+                                <p style="margin: 5px 0;">
+                                    • Cost increase yearly if rental term is 5 years or more.
+                                </p>
+                            </div>
+                        </div>
+
                         <section id="signature" name="Signature">
                             <div class="row mt-4" name="signature">
                                 <div class="col-6">

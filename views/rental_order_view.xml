@@ -164,4 +164,14 @@
         </field>
     </record>
 
+     <!-- Hide Booked badges from rental sale order form -->
+    <record id="view_order_form_inherit_hide_rental_badges" model="ir.ui.view">
+        <field name="name">sale.order.form.hide.rental.badges</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('badge')][hasclass('text-bg-success')][text()='Booked']" position="replace"/>
+        </field>
+    </record>
 </odoo>
+
