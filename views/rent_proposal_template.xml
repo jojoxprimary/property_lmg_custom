@@ -246,12 +246,49 @@
                                 Terms and Conditions
                             </h5>
                             <div style="font-size: 12px; padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; margin-top: 10px;">
-                                <p style="margin: 5px 0;">
-                                    • Non-refundable advance rent payment.
-                                </p>
-                                <p style="margin: 5px 0;">
-                                    • Cost increase yearly if rental term is 5 years or more.
-                                </p>
+                                <div style="margin: 5px 0;">
+                                    <ol style="margin: 0 0 10px 18px; padding: 0;">
+                                        <li>Advance rent payment is non-refundable should the tenant not push through with unit rental.</li>
+                                        <li>There will be a 5% increment in the rental increase annually unless another agreement will be reached between tenant and lessee.</li>
+                                        <li>3 months non-payment of rent shall be subject for eviction.</li>
+                                        <li>Leasing officers are not allowed to accept any form of payments.</li>
+                                        <li>Payments should be made only through authorized payment channels of Primaryhomes Inc.</li>
+                                    </ol>
+
+                                    <p style="margin: 0 0 6px 0;">Here are the official bank accounts of Primaryhomes Inc.</p>
+                                    <table class="table table-sm" style="font-size: 12px; margin-bottom: 10px; border: 1px solid #dee2e6;">
+                                        <thead>
+                                            <tr style="background-color: #ffffff;">
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Account Name</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Account Number</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Bank / Branch</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Swift Code</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">PRIMARYHOMES, INC</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">00-344-001571-2</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BDO – NORTH MANDAUE</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BNORPHMM</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">PRIMARYHOMES, INC</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">9101-0035-98</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BPI – MANALILI</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BOPIPHMM</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p style="margin: 0;">
+                                        Once payments have been made, kindly email your proof of payment to:
+                                        <br/>
+                                        <span style="font-weight: bold; font-size: 13px; color: #875A7B;">Rent@primaryhomes.com</span>
+                                        or
+                                        <span style="font-weight: bold; font-size: 13px; color: #875A7B;">gbsaquilon@primaryhomes.com</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
