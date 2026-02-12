@@ -181,6 +181,22 @@
         </field>
     </record>
 
+    <!-- Hide subscription state badge via CSS -->
+    <record id="view_subscription_state_badge_hide" model="ir.ui.view">
+        <field name="name">subscription.state.badge.hide</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_subscription.sale_subscription_order_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <style>
+                    div[name='subscription_state'] { display: none !important; }
+                    .o_field_badge.text-danger { display: none !important; }
+                    .o_field_badge.text-success { display: none !important; }
+                </style>
+            </xpath>
+        </field>
+    </record>
+
     <!-- SUBSTATE TO SHOW ONLY IN RENTAL APP VIEW  -->
     <record id="view_order_form_hide_substate_sales" model="ir.ui.view">
         <field name="name">sale.order.form.hide.substate.sales</field>
@@ -196,15 +212,6 @@
         </field>
     </record>
 
-    <!-- Hide Booked badges from rental sale order form (OPTIONAL - won't fail if not found) -->
-    <record id="view_order_form_inherit_hide_rental_badges" model="ir.ui.view">
-        <field name="name">sale.order.form.hide.rental.badges</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
-        <field name="arch" type="xml">
-            <!-- Hide Booked badges - using optional="True" so it won't fail if not found -->
-            <xpath expr="//div[hasclass('badge')][hasclass('text-bg-success')][text()='Booked']" position="replace" optional="True"/>
-        </field>
-    </record>
+   
 </odoo>
 
