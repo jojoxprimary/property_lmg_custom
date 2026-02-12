@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ========================================== -->
+    <!-- MAIN RENTAL ORDER FORM CUSTOMIZATIONS -->
+    <!-- ========================================== -->
     <record id="view_rental_order_form_inherit_substate" model="ir.ui.view">
         <field name="name">rental.order.form.substate.custom</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
         <field name="arch" type="xml">
 
-            <!-- CUSTOMIZED BUTTONS -->
+            <!-- ========================================== -->
+            <!-- CUSTOM BUTTONS -->
+            <!-- ========================================== -->
             <xpath expr="//header/*[1]" position="before">
                 <!-- Submit for Review Button -->
                 <button
@@ -52,7 +57,9 @@
                 />
             </xpath>
 
-            <!-- OVERRIDE DEFAULT BUTTONS  -->
+            <!-- ========================================== -->
+            <!-- HIDE/MODIFY DEFAULT BUTTONS -->
+            <!-- ========================================== -->
             <!-- Hide Send by Email Button (Primary - in draft state) -->
             <xpath expr="//header/button[@id='send_by_email_primary']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -63,7 +70,7 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- Remove btn-primary of confirm button in sent state-->
+            <!-- Remove btn-primary class from confirm button in sent state -->
             <xpath expr="//button[@name='action_confirm'][@id='action_confirm']" position="attributes">
                 <attribute name="class">btn</attribute>
             </xpath>
@@ -83,8 +90,10 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             
-            <!-- CUSTOM PILL BADGES -->
-            <!-- Custom Pill Badge for Proposal Sent -->
+            <!-- ========================================== -->
+            <!-- CUSTOM STATUS BADGES -->
+            <!-- ========================================== -->
+            <!-- Waiting for Client Signature Badge (for Proposal Sent) -->
             <xpath expr="//div[@name='button_box']" position="after">
                 <div name="waiting_signature_pill" 
                      class="float-end badge rounded-pill fw-bold text-bg-info"
@@ -93,8 +102,10 @@
                 </div>
             </xpath>
 
-            <!-- MAKE FORM READONLY WHEN IN "FOR REVIEW" STATE -->
-            <!-- Make the entire sheet readonly when in For Review -->
+            <!-- ========================================== -->
+            <!-- FORM READONLY CONTROLS -->
+            <!-- ========================================== -->
+            <!-- Make the entire sheet readonly when in For Review state -->
             <xpath expr="//sheet" position="attributes">
                 <attribute name="readonly">substate_name == 'For Review'</attribute>
             </xpath>
@@ -104,7 +115,9 @@
                 <attribute name="readonly">1</attribute>
             </xpath>
 
-            <!-- MAKE SPECIFIC FIELDS READONLY -->
+            <!-- ========================================== -->
+            <!-- FIELD-LEVEL READONLY ATTRIBUTES -->
+            <!-- ========================================== -->
             <!-- Customer -->
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
@@ -145,13 +158,15 @@
                 <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
             </xpath>
 
-          
+            <!-- ========================================== -->
+            <!-- DURATION DISPLAY CUSTOMIZATION -->
+            <!-- ========================================== -->
             <!-- Change rental duration display from days to months -->
             <xpath expr="//label[@for='duration_days']" position="replace">
                 <label for="duration_months" string="Duration" invisible="not is_rental_order and not rental_start_date"/>
             </xpath>
 
-            <!-- Replace duration days with duration months (readonly already included in fields) -->
+            <!-- Replace duration days field with duration months -->
             <xpath expr="//div[hasclass('o_row')][field[@name='duration_days']]" position="replace">
                 <div class="o_row" invisible="not is_rental_order and not rental_start_date">
                     <field class="oe_inline" style="max-width: 3rem" name="duration_months" invisible="duration_months == 0" readonly="is_for_manager_review == True or substate_name != 'Proposal'"/>
@@ -166,7 +181,26 @@
         </field>
     </record>
 
-    <!-- Separate record to override subscription quotation pill -->
+    <!-- ========================================== -->
+    <!-- HIDE UNWANTED BADGES -->
+    <!-- ========================================== -->
+    <record id="view_order_form_inherit_hide_rental_badges" model="ir.ui.view">
+        <field name="name">sale.order.form.hide.rental.badges</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_renting.rental_order_primary_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Hide Booked badge -->
+            <xpath expr="//div[hasclass('badge')][hasclass('text-bg-success')][text()='Booked']" position="replace" optional="True"/>
+            
+            <!-- Hide Late Pickup badge -->
+            <xpath expr="//div[hasclass('badge')][hasclass('text-bg-danger')][hasclass('float-end')][text()='Late Pickup']" position="replace" optional="True"/>
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- SUBSCRIPTION VIEW CUSTOMIZATIONS -->
+    <!-- ========================================== -->
+    <!-- Override subscription quotation pill -->
     <record id="view_subscription_quotation_pill_override" model="ir.ui.view">
         <field name="name">subscription.quotation.pill.override</field>
         <field name="model">sale.order</field>
@@ -181,7 +215,7 @@
         </field>
     </record>
 
-    <!-- Hide subscription state badge via CSS -->
+    <!-- Hide subscription state badges (In Progress, Churned, etc.) -->
     <record id="view_subscription_state_badge_hide" model="ir.ui.view">
         <field name="name">subscription.state.badge.hide</field>
         <field name="model">sale.order</field>
@@ -197,21 +231,25 @@
         </field>
     </record>
 
-    <!-- SUBSTATE TO SHOW ONLY IN RENTAL APP VIEW  -->
+    <!-- ========================================== -->
+    <!-- SALES APP VIEW CUSTOMIZATIONS -->
+    <!-- ========================================== -->
+    <!-- Hide substate field in Sales app (only show in Rental app) -->
     <record id="view_order_form_hide_substate_sales" model="ir.ui.view">
         <field name="name">sale.order.form.hide.substate.sales</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Hide substate field if not a rental order -->
             <xpath expr="//field[@name='substate_id']" position="attributes">
                 <attribute name="invisible">not is_rental_order</attribute>
             </xpath>
+            
+            <!-- Add is_rental_order field for visibility control -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="is_rental_order" invisible="1"/>
             </xpath>
         </field>
     </record>
-
    
 </odoo>
-
