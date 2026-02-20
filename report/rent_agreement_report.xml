@@ -494,8 +494,8 @@
                                 <!-- Leasing Supervisor -->
                                 <div style="text-align: center; margin-bottom: 20px;">
                                     <h5 style="margin-bottom: 5px;">Leasing Supervisor</h5>
-                                    <img src="/property_lmg_custom/static/img/sample_signature.png" 
-                                        style="max-height: 2.5rem; max-width: 100%;"/>
+                                    <img src="/property_lmg_custom/static/img/Mabelle.png" 
+                                        style="max-height: 8rem; max-width: 100%;"/>
                                     <p style="margin-top: 2px; margin-bottom: 5px;">
                                         <strong>Name:</strong> Lady Mabelle Dignadice <br/>
                                         <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
@@ -505,8 +505,8 @@
                                 <!-- Operations Manager -->
                                 <div style="text-align: center;">
                                     <h5 style="margin-bottom: 5px;">Operations Manager</h5>
-                                    <img src="/property_lmg_custom/static/img/sample_signature.png" 
-                                        style="max-height: 2.5rem; max-width: 100%;"/>
+                                    <img src="/property_lmg_custom/static/img/Shai.png" 
+                                        style="max-height: 5rem; max-width: 100%;"/>
                                     <p style="margin-top: 2px; margin-bottom: 5px;">
                                         <strong>Name:</strong> Michelle S. Cutang <br/>
                                         <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
