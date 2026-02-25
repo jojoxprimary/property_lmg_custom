@@ -23,12 +23,35 @@
         <field name="sale_ok">True</field>
         <field name="purchase_ok">False</field>
         <field name="taxes_id" eval="[(5, 0, 0)]"/>  <!-- Clear all taxes -->
+        <field name="description_sale">One time payment.</field>
     </record>
 
-    <!-- Advance Rent Product -->
     <record id="product_advance_rent" model="product.product">
         <field name="name">Advance Rent</field>
         <field name="default_code">ADVANCE_RENT</field>
+        <field name="type">service</field>
+        <field name="list_price">0.00</field>
+        <field name="categ_id" ref="product.product_category_all"/>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="taxes_id" eval="[(5, 0, 0)]"/>  <!-- Clear all taxes -->
+        <field name="description_sale">One time payment.</field>
+    </record>
+
+    <!-- CUSA -->
+    <record id="product_cusa" model="product.product">
+        <field name="name">CUSA</field>
+        <field name="type">service</field>
+        <field name="list_price">0.00</field>
+        <field name="categ_id" ref="product.product_category_all"/>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="taxes_id" eval="[(5, 0, 0)]"/>  <!-- Clear all taxes -->
+    </record>
+
+    <!-- Other charges -->
+    <record id="product_other_charges" model="product.product">
+        <field name="name">Other Charges</field>
         <field name="type">service</field>
         <field name="list_price">0.00</field>
         <field name="categ_id" ref="product.product_category_all"/>

@@ -20,16 +20,20 @@
         </field>
     </record>
 
+
     <!-- Main Report Template -->
     <template id="report_rental_quotation_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h5 style="text-align: center; font-weight: bold;">
-                        RENT PROPOSAL
-                        </h5>
-                        
+                        <t t-set="property_line" t-value="doc.order_line[:1]"/>
+                            <h5 style="text-align: center; font-weight: bold;">
+                                RENT PROPOSAL
+                                <t t-if="property_line and property_line.product_id.property_type">
+                                    (<span t-esc="property_line.product_id.property_type.capitalize()"/>)
+                                </t>
+                            </h5>
                         <!-- Get the first order line (assuming rental property is always first or most relevant) -->
                         <t t-set="property_line" t-value="doc.order_line[:1]"/>
                         
@@ -174,70 +178,81 @@
                         <!-- RENTAL ITEMS TABLE -->
                         <div style="page-break-inside: avoid;">
                             <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
-                                Rent Rate
+                            Rent Rate
                             </h5>
-                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
-                                <tbody>
-                                    <t t-foreach="doc.order_line" t-as="line">
-                                        <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
-                                            <td style="width: 30%;padding: 5px;">
-                                                <t t-set="desc_parts" t-value="line.name.split('\n')"/>
-                                                
-                                                <!-- Product Name (Bold) -->
-                                                <div style="color: #494949ff; font-weight: bold;">
-                                                    <span t-esc="desc_parts[0]"/>
-                                                </div>
-                                                
-                                                <!-- Additional Description (Italic) -->
-                                                <t t-if="len(desc_parts) > 1">
-                                                    <t t-foreach="desc_parts[1:]" t-as="desc_line">
-                                                        <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
-                                                            <span t-esc="desc_line"/>
-                                                        </div>
-                                                    </t>
+                        <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+                            <thead>
+                                <tr style="background-color: #f8f9fa; font-size: 12px;">
+                                    <th style="width: 40%; padding: 5px;">Description</th>
+                                    <th style="text-align: right; padding: 5px;">Unit Price</th>
+                                    <th style="text-align: right; padding: 5px;">Taxes</th>
+                                    <th style="text-align: right; padding: 5px;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.order_line" t-as="line">
+                                    <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
+                                        <td style="width: 40%; padding: 5px;">
+                                            <t t-set="desc_parts" t-value="line.name.split('\n')"/>
+                                            <div style="color: #494949ff; font-weight: bold;">
+                                                <span t-esc="desc_parts[0]"/>
+                                            </div>
+                                            <t t-if="len(desc_parts) > 1">
+                                                <t t-foreach="desc_parts[1:]" t-as="desc_line">
+                                                    <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
+                                                        <span t-esc="desc_line"/>
+                                                    </div>
                                                 </t>
-                                            </td>
-                                            <td style="padding: 5px; text-align: right;">
-                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' />
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        
+                                            </t>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="line.price_unit"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-esc="', '.join(line.tax_id.mapped('name')) if line.tax_id else '-'"/>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="line.price_subtotal"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
 
-                            <!-- TOTALS SECTION -->
-                            <div class="row justify-content-end mt-4">
-                                <div class="col-5">
-                                    <table class="table table-sm">
-                                        <tr style="font-size: 12px;">
-                                            <td style="padding: 4px;"><strong>Subtotal:</strong></td>
-                                            <td class="text-end" style="padding: 4px;">
-                                                <span t-field="doc.amount_untaxed" 
-                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                            </td>
-                                        </tr>
-                                        <tr style="font-size: 12px;">
-                                            <td style="padding: 4px;"><strong>Taxes:</strong></td>
-                                            <td class="text-end" style="padding: 4px;">
-                                                <span t-field="doc.amount_tax" 
-                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                            </td>
-                                        </tr>
-                                        <tr style="font-size: 15px;">
-                                            <td style="padding: 6px;">
-                                                <span style="margin: 0; color: #875A7B;">Total:</span>
-                                            </td>
-                                            <td class="text-end" style="padding: 5px;">
-                                                <span style="margin: 0; color: #875A7B;">
-                                                    <span t-field="doc.amount_total" 
-                                                        t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+                        <!-- TOTALS SECTION -->
+                        <div class="row justify-content-end mt-4">
+                        <div class="col-5">
+                        <table class="table table-sm">
+                            <tr style="font-size: 12px;">
+                                <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                <td class="text-end" style="padding: 4px;">
+                                    <span t-field="doc.amount_untaxed"
+                                            t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                <td class="text-end" style="padding: 4px;">
+                                    <span t-field="doc.amount_tax"
+                                            t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr style="font-size: 15px;">
+                                <td style="padding: 6px;">
+                                    <span style="margin: 0; color: #875A7B;">Total:</span>
+                                </td>
+                                <td class="text-end" style="padding: 5px;">
+                                    <span style="margin: 0; color: #875A7B;">
+                                        <span t-field="doc.amount_total"
+                                                t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                        </div>
                         </div>
 
                         <!-- TERMS AND CONDITIONS / NOTES SECTION -->

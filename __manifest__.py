@@ -26,6 +26,7 @@
         'views/rental_order_view.xml',
         'views/crm_lead_view.xml',
         'views/rental_order_kanban.xml',
+        'views/product_view.xml',
     
         # Reports
         'report/rent_agreement_report.xml',
