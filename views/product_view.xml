@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_rental_type" model="ir.ui.view">
+        <field name="name">product.template.form.rental.type</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Place it properly inside General Information tab -->
+            <field name="type" position="after">
+                <field name="property_type"
+                       widget="radio"
+                       invisible="not rent_ok"
+                       required="rent_ok"
+                       options="{'horizontal': true}"/>
+            </field>
+        </field>
+    </record>
+</odoo>
