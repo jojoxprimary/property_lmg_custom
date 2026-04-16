@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Proposal substate - Initial state for new rental orders -->
+        <record id="substate_proposal" model="rental.substate">
+            <field name="name">Proposal</field>
+            <field name="sequence">10</field>
+            <field name="is_default">True</field>
+        </record>
+
+        <!-- For Review substate - After Submit for Review action -->
+        <record id="substate_for_review" model="rental.substate">
+            <field name="name">For Review</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Proposal Sent substate - After sending to client -->
+        <record id="substate_proposal_sent" model="rental.substate">
+            <field name="name">Proposal Sent</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- Rental Agreement Sent substate -->
+        <record id="substate_agreement_sent" model="rental.substate">
+            <field name="name">Rental Agreement Sent</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- Confirmed substate -->
+        <record id="substate_confirmed" model="rental.substate">
+            <field name="name">Confirmed</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- In Progress substate -->
+        <record id="substate_in_progress" model="rental.substate">
+            <field name="name">In Progress</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <!-- Completed substate -->
+        <record id="substate_completed" model="rental.substate">
+            <field name="name">Completed</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <!-- Cancelled substate -->
+        <record id="substate_cancelled" model="rental.substate">
+            <field name="name">Cancelled</field>
+            <field name="sequence">80</field>
+        </record>
+    </data>
+</odoo>

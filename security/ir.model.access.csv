@@ -7,3 +7,5 @@ access_product_product_rental_user,product.product.rental.user,product.model_pro
 access_product_product_rental_manager,product.product.rental.manager,product.model_product_product,group_rental_manager,1,1,1,0
 access_res_partner_rental_user,res.partner.rental.user,base.model_res_partner,group_rental_user,1,1,1,0
 access_res_partner_rental_manager,res.partner.rental.manager,base.model_res_partner,group_rental_manager,1,1,1,0
+access_rental_substate_user,rental.substate.user,model_rental_substate,group_rental_user,1,1,1,0
+access_rental_substate_manager,rental.substate.manager,model_rental_substate,group_rental_manager,1,1,1,1

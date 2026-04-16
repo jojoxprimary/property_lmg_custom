@@ -12,7 +12,7 @@ class SaleOrder(models.Model):
     # FIELDS
     # ===========================
     
-    substate_id = fields.Many2one('base.substate', string="Substate")
+    substate_id = fields.Many2one('rental.substate', string="Substate")
     substate_name = fields.Char(
         string="Substate Name",
         compute="_compute_substate_name",
@@ -163,9 +163,8 @@ class SaleOrder(models.Model):
         self.ensure_one()
 
         # Set substate to "For Review"
-        substate = self.env['base.substate'].search([
+        substate = self.env['rental.substate'].search([
             ('name', '=', 'For Review'),
-            ('model', '=', 'sale.order'),
         ], limit=1)
 
         if substate:

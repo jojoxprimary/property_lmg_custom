@@ -16,14 +16,11 @@ class MailComposer(models.TransientModel):
             
             if sale_order_ids:
                 sale_orders = self.env['sale.order'].browse(sale_order_ids)
-                proposal_sent_substate = self.env['base.substate'].search([
+                proposal_sent_substate = self.env['rental.substate'].search([
                     ('name', '=', 'Proposal Sent'),
-                    ('model', '=', 'sale.order')
                 ], limit=1)
                 
                 if proposal_sent_substate:
                     sale_orders.write({'substate_id': proposal_sent_substate.id})
-                else:
-                    raise UserError("Substate 'Proposal Sent' not found. Please configure it in Base Substates.")
         
         return result
