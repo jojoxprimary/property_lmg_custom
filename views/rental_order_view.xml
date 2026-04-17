@@ -20,7 +20,7 @@
                     type="object"
                     class="btn-primary"
                     confirm="Are you sure you want to send this proposal for review?"
-                    invisible="substate_name != 'Proposal'"
+                    invisible="rental_substate != 'Proposal'"
                 />
                 
                 <!-- Send Proposal Button - Only for Rental Managers -->
@@ -29,7 +29,7 @@
                     string="Send to Client"
                     type="object"
                     class="btn-primary"
-                    invisible="substate_name != 'For Review'"
+                    invisible="rental_substate != 'For Review'"
                     confirm="Are you sure you want to approve and send this proposal?"
                     groups="property_lmg_custom.group_rental_manager"
                 />
@@ -103,10 +103,18 @@
             </xpath>
 
             <!-- ========================================== -->
-            <!-- ADD SUBSATE FIELD -->
+            <!-- ADD RENTAL SUBSTATE STATUSBAR (below main header) -->
             <!-- ========================================== -->
+            <xpath expr="//header" position="after">
+                <header invisible="state not in ['draft', 'sent']">
+                    <field name="rental_substate" widget="statusbar"/>
+                </header>
+            </xpath>
+
+            <!-- Hide default substate field from sheet -->
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="substate_id" optional="hide"/>
+                <field name="property_unit_id" optional="hide"/>
+                <field name="substate_id" invisible="1"/>
             </xpath>
 
             <!-- ========================================== -->
@@ -114,12 +122,7 @@
             <!-- ========================================== -->
             <!-- Make the entire sheet readonly when in For Review state -->
             <xpath expr="//sheet" position="attributes">
-                <attribute name="readonly">substate_name == 'For Review'</attribute>
-            </xpath>
-
-            <!-- Make substate field readonly (non-clickable) -->
-            <xpath expr="//field[@name='substate_id']" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="readonly">rental_substate == 'For Review'</attribute>
             </xpath>
 
             <!-- ========================================== -->
@@ -127,42 +130,42 @@
             <!-- ========================================== -->
             <!-- Customer -->
             <xpath expr="//field[@name='partner_id']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
 
             <!-- Expiration/Validity Date -->
             <xpath expr="//field[@name='validity_date']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
-    
+
             <!-- Quotation/Order Date -->
             <xpath expr="//field[@name='date_order']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
-            </xpath>   
+                <attribute name="readonly">is_for_manager_review == True</attribute>
+            </xpath>
 
             <!-- Recurring Plan -->
             <xpath expr="//field[@name='plan_id']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
 
             <!-- Pricelist -->
             <xpath expr="//field[@name='pricelist_id']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
-            </xpath> 
+                <attribute name="readonly">is_for_manager_review == True</attribute>
+            </xpath>
 
             <!-- Payment Terms -->
             <xpath expr="//field[@name='payment_term_id']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
 
             <!-- Rental Start Date -->
             <xpath expr="//field[@name='rental_start_date']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
 
             <!-- Order Lines -->
             <xpath expr="//field[@name='order_line']" position="attributes">
-                <attribute name="readonly">is_for_manager_review == True or substate_name != 'Proposal'</attribute>
+                <attribute name="readonly">is_for_manager_review == True</attribute>
             </xpath>
 
             <!-- ========================================== -->
@@ -252,9 +255,9 @@
                 <field name="is_rental_order" invisible="1"/>
             </xpath>
 
-            <!-- Add substate_id and hide it if not rental order -->
+            <!-- Hide substate_id  -->
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="substate_id" invisible="not is_rental_order"/>
+                <field name="substate_id" invisible="1"/>
             </xpath>
         </field>
     </record>

@@ -18,6 +18,15 @@ class SaleOrder(models.Model):
         compute="_compute_substate_name",
         store=False
     )
+    rental_substate = fields.Selection([
+        ('Proposal', 'Proposal'),
+        ('For Review', 'For Review'),
+    ], string="Status", compute='_compute_rental_substate', store=True)
+
+    @api.depends('substate_id')
+    def _compute_rental_substate(self):
+        for order in self:
+            order.rental_substate = order.substate_id.name or 'Proposal'
     
     is_for_manager_review = fields.Boolean(
         string="For Manager Review",
@@ -50,6 +59,14 @@ class SaleOrder(models.Model):
         compute='_compute_duration_months',
         store=True
     )
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        substate = self.env['rental.substate'].search([('name', '=', 'Proposal')], limit=1)
+        if substate:
+            defaults['substate_id'] = substate.id
+        return defaults
 
     # ===========================
     # COMPUTE METHODS
@@ -117,6 +134,31 @@ class SaleOrder(models.Model):
     # ONCHANGE METHODS
     # ===========================
     
+    @api.onchange('property_unit_id')
+    def _onchange_property_unit(self):
+        """Auto-add rental products when Property Unit is selected."""
+        if not self.property_unit_id:
+            return
+
+        existing_product_codes = set(self.order_line.mapped('product_id.default_code') or [])
+        product_codes_to_add = ['MONTHLY_RENTAL', 'SECURITY_DEPOSIT', 'ADVANCE_RENT']
+
+        commands = [(4, line.id, 0) for line in self.order_line]
+        for default_code in product_codes_to_add:
+            if default_code not in existing_product_codes:
+                product = self.env['product.product'].search(
+                    [('default_code', '=', default_code)],
+                    limit=1
+                )
+                if product:
+                    commands.append((0, 0, {
+                        'product_id': product.id,
+                        'product_uom_qty': 1,
+                    }))
+
+        if len(commands) > len(self.order_line):
+            self.update({'order_line': commands})
+
     @api.onchange('order_line')
     def _onchange_rental_prices(self):
         """Auto-update Security Deposit and Advance Rent prices based on Monthly Rental price."""
