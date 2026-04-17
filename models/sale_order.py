@@ -21,18 +21,17 @@ class SaleOrder(models.Model):
     rental_substate = fields.Selection([
         ('Proposal', 'Proposal'),
         ('For Review', 'For Review'),
-        ('Proposal Sent', 'Proposal Sent'),
-        ('Rental Agreement Sent', 'Rental Agreement Sent'),
-        ('Confirmed', 'Confirmed'),
-        ('In Progress', 'In Progress'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
-    ], string="Status", compute='_compute_rental_substate', store=True)
+    ], string="Status", compute='_compute_rental_substate', store=True,
+       help="Only applies to quotation stage")
 
     @api.depends('substate_id')
     def _compute_rental_substate(self):
+        valid_substates = ['Proposal', 'For Review']
         for order in self:
-            order.rental_substate = order.substate_id.name or 'Proposal'
+            if order.substate_id and order.substate_id.name in valid_substates:
+                order.rental_substate = order.substate_id.name
+            else:
+                order.rental_substate = 'Proposal'
     
     is_for_manager_review = fields.Boolean(
         string="For Manager Review",
