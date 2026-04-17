@@ -21,6 +21,12 @@ class SaleOrder(models.Model):
     rental_substate = fields.Selection([
         ('Proposal', 'Proposal'),
         ('For Review', 'For Review'),
+        ('Proposal Sent', 'Proposal Sent'),
+        ('Rental Agreement Sent', 'Rental Agreement Sent'),
+        ('Confirmed', 'Confirmed'),
+        ('In Progress', 'In Progress'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
     ], string="Status", compute='_compute_rental_substate', store=True)
 
     @api.depends('substate_id')
@@ -63,7 +69,12 @@ class SaleOrder(models.Model):
     @api.model
     def default_get(self, fields_list):
         defaults = super().default_get(fields_list)
-        substate = self.env['rental.substate'].search([('name', '=', 'Proposal')], limit=1)
+        try:
+            substate = self.env['rental.substate'].search([('is_default', '=', True)], limit=1)
+            if not substate:
+                substate = self.env['rental.substate'].search([], limit=1)
+        except AccessError:
+            substate = False
         if substate:
             defaults['substate_id'] = substate.id
         return defaults
@@ -142,19 +153,24 @@ class SaleOrder(models.Model):
 
         existing_product_codes = set(self.order_line.mapped('product_id.default_code') or [])
         product_codes_to_add = ['MONTHLY_RENTAL', 'SECURITY_DEPOSIT', 'ADVANCE_RENT']
+        new_codes = [c for c in product_codes_to_add if c not in existing_product_codes]
+
+        if not new_codes:
+            return
+
+        products = self.env['product.product'].search([('default_code', 'in', new_codes)])
+        product_by_code = {p.default_code: p for p in products}
 
         commands = [(4, line.id, 0) for line in self.order_line]
-        for default_code in product_codes_to_add:
-            if default_code not in existing_product_codes:
-                product = self.env['product.product'].search(
-                    [('default_code', '=', default_code)],
-                    limit=1
-                )
-                if product:
-                    commands.append((0, 0, {
-                        'product_id': product.id,
-                        'product_uom_qty': 1,
-                    }))
+        for code in new_codes:
+            product = product_by_code.get(code)
+            if product:
+                commands.append((0, 0, {
+                    'product_id': product.id,
+                    'product_uom_qty': 1,
+                }))
+            else:
+                _logger.warning(f"Product not found: {code}")
 
         if len(commands) > len(self.order_line):
             self.update({'order_line': commands})
