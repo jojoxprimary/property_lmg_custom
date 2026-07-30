@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================== -->
+    <!-- PRODUCT TEMPLATE - ADD PROPERTY UNIT OPTIONS -->
+    <!-- ========================================== -->
+    <record id="view_product_template_form_property_unit" model="ir.ui.view">
+        <field name="name">product.template.form.property.unit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <field name="name" position="after">
+                <field name="is_property_unit"
+                       widget="boolean_toggle"
+                       groups="property_lmg_custom.group_rental_user,property_lmg_custom.group_rental_manager"/>
+                <field name="property_type"
+                       widget="radio"
+                       invisible="not is_property_unit"
+                       groups="property_lmg_custom.group_rental_user,property_lmg_custom.group_rental_manager"/>
+            </field>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- PRODUCT TEMPLATE - PROPERTY UNIT TAB PAGE -->
+    <!-- ========================================== -->
+    <record id="view_product_template_form_property_unit_tab" model="ir.ui.view">
+        <field name="name">product.template.form.property.unit.tab</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Property Unit tab page after the last tab in the notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Property Unit"
+                      name="property_unit_tab"
+                      invisible="not is_property_unit">
+                    <group>
+                        <group string="Unit Details">
+                            <field name="floor"/>
+                            <field name="area"/>
+                            <field name="space_use" widget="radio"
+                                   options="{'horizontal': true}"/>
+                        </group>
+                        <group string="Conditions">
+                            <field name="hand_over_condition_ids"
+                                   widget="many2many_tags"/>
+                            <field name="rent_inclusion_ids"
+                                   widget="many2many_tags"/>
+                            <field name="rent_exclusion_ids"
+                                   widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group string="Requirements Before Move-in">
+                        <field name="requirements_before_movein"
+                               widget="html"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

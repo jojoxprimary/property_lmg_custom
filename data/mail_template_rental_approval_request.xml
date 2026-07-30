@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <function model="ir.model.data" name="write">
+            <function model="ir.model.data" name="search">
+                <value eval="[('module', '=', 'property_lmg_custom'), ('name', '=', 'mail_template_rental_approval_request')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record id="mail_template_rental_approval_request" model="mail.template">
+            <field name="name">Rental: Approval Request</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Rental Quotation #{{ object.name }} - Approval Required</field>
+            <field name="email_from">{{ 'Primary Homes Incorporated &lt;noreply@theprimarygroup.com.ph&gt;' }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p>Hello,</p>
+    <p>
+        A rental quotation has been submitted and is now waiting for your approval.
+    </p>
+    <ul>
+        <li><strong>Quotation:</strong> <t t-out="object.name">SO001</t></li>
+        <li><strong>Customer:</strong> <t t-out="object.partner_id.name">Customer Name</t></li>
+        <li>
+            <strong>Rental Date:</strong>
+            <t t-if="object.rental_start_date and object.rental_return_date">
+                <t t-out="object.rental_start_date" t-options='{"widget": "date"}'>2026-01-01</t>
+                to
+                <t t-out="object.rental_return_date" t-options='{"widget": "date"}'>2026-01-15</t>
+            </t>
+            <t t-elif="object.rental_start_date">
+                <t t-out="object.rental_start_date" t-options='{"widget": "date"}'>2026-01-01</t>
+            </t>
+            <t t-elif="object.rental_return_date">
+                <t t-out="object.rental_return_date" t-options='{"widget": "date"}'>2026-01-15</t>
+            </t>
+            <t t-else="">-</t>
+        </li>
+        <li><strong>Duration:</strong> <t t-out="int(object.duration_months) if object.duration_months else 0">0</t> month(s)</li>
+        <li><strong>Submitted By:</strong> <t t-out="object.submitted_by_id.name">User Name</t></li>
+    </ul>
+    <p>
+        Please review this quotation and approve or reject it at your earliest convenience.
+    </p>
+    <p style="margin-top: 16px;">
+        <a t-att-href="object.get_base_url() + '/odoo/rental/' + str(object.id)"
+           style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
+            View Quotation
+        </a>
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

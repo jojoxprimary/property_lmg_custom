@@ -1,41 +1,33 @@
 {
-    'name': 'Property LMG Rental Substate Custom',
-    'version': '1.0',
-    'depends': ['sale_management', 
-                # 'sale_subscription', 
-                'sale_renting', 
-                'base_substate', 
-                'sale_substate', 
-                'stock', 'crm', 'helpdesk', 'website', 'web_studio'],
-    'author': 'Homebrew',
+    'name': 'LMG Rental Approval',
+    'version': '18.0.1.0.0',
     'category': 'Sales/Rental',
+    'summary': 'Approval workflow for rental quotations',
+    'description': """
+        Adds a mandatory approval step for rental quotations.
+        Rental Users must submit quotations for approval by a Rental Manager
+        before they can be sent to the customer.
+    """,
+    'depends': ['sale', 'sale_renting', 'mail', 'website', 'account', 'crm'],
     'data': [
-        # Security
-        'security/rental_security.xml',
+        'security/security.xml',
         'security/ir.model.access.csv',
-
-        # Views templates
-        'views/rent_proposal_template.xml',
-        'views/rent_proposal_portal_template.xml',
-        'views/portal_subscription_custom.xml',
-        'views/portal_invoice_custom.xml',
-        
-        # Data & Templates
-        'data/mail_template_data.xml',
-        'data/mail_template_rent_proposal.xml',
-        'data/mail_template_review_notification.xml',
-        'data/mail_template_cancellation.xml',
-        'data/rental_products.xml',
-
-        # Views
-        'views/rental_order_view.xml',
-        'views/crm_lead_view.xml',
-        'views/rental_order_kanban.xml',
-        'views/product_view.xml',
-    
-        # Reports
+        # 'data/product.xml',
+        'report/rental_proposal_template.xml',
         'report/rent_agreement_report.xml',
+        'data/mail_template_rental_approval_request.xml',
+        'data/mail_template_rental_rejection.xml',
+        'data/mail_template_rental_proposal.xml',
+        'data/mail_template_rental_client_approved.xml',
+        'data/mail_template_rental_client_thank_you.xml',
+        'data/rent_tags.xml',
+        'data/hand_over_conditions.xml',
+        'views/sale_order_views.xml',
+        'views/account_move_views.xml',
+        'views/product_template_views.xml',
+        'views/rental_proposal_portal.xml',
+        'views/rental_terms_views.xml',
     ],
     'installable': True,
-    'application': False,
+    'license': 'LGPL-3',
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hand_over_clean" model="hand_over_condition">
+        <field name="name">Clean</field>
+    </record>
+    <record id="hand_over_painted" model="hand_over_condition">
+        <field name="name">Painted</field>
+    </record>
+    <record id="hand_over_flooring" model="hand_over_condition">
+        <field name="name">Flooring in good condition</field>
+    </record>
+    <record id="hand_over_walls" model="hand_over_condition">
+        <field name="name">Walls in good condition</field>
+    </record>
+    <record id="hand_over_fixtures" model="hand_over_condition">
+        <field name="name">All fixtures working</field>
+    </record>
+</odoo>

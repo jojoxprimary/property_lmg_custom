@@ -7,3 +7,13 @@ access_product_product_rental_user,product.product.rental.user,product.model_pro
 access_product_product_rental_manager,product.product.rental.manager,product.model_product_product,group_rental_manager,1,1,1,0
 access_res_partner_rental_user,res.partner.rental.user,base.model_res_partner,group_rental_user,1,1,1,0
 access_res_partner_rental_manager,res.partner.rental.manager,base.model_res_partner,group_rental_manager,1,1,1,0
+access_rental_invoiced_period_user,rental.invoiced.period.user,property_lmg_custom.model_rental_invoiced_period,group_rental_user,1,1,1,0
+access_rental_invoiced_period_manager,rental.invoiced.period.manager,property_lmg_custom.model_rental_invoiced_period,group_rental_manager,1,1,1,1
+access_rental_occupant_user,rental.occupant.user,property_lmg_custom.model_rental_occupant,group_rental_user,1,1,1,0
+access_rental_occupant_manager,rental.occupant.manager,property_lmg_custom.model_rental_occupant,group_rental_manager,1,1,1,1
+access_rent_inclusion_user,rent.inclusion.user,property_lmg_custom.model_rent_inclusion,group_rental_user,1,0,0,0
+access_rent_inclusion_manager,rent.inclusion.manager,property_lmg_custom.model_rent_inclusion,group_rental_manager,1,1,1,1
+access_rent_exclusion_user,rent.exclusion.user,property_lmg_custom.model_rent_exclusion,group_rental_user,1,0,0,0
+access_rent_exclusion_manager,rent.exclusion.manager,property_lmg_custom.model_rent_exclusion,group_rental_manager,1,1,1,1
+access_hand_over_condition_user,hand.over.condition.user,property_lmg_custom.model_hand_over_condition,group_rental_user,1,0,0,0
+access_hand_over_condition_manager,hand.over.condition.manager,property_lmg_custom.model_hand_over_condition,group_rental_manager,1,1,1,1

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View customizations removed due to Odoo 18 parent view incompatibility.
+         The wizard model logic (wizards.py) still functions correctly. -->
+</odoo>

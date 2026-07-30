@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_rental_quotation" model="ir.actions.report">
+        <field name="name">Rental Quotation</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property_lmg_custom.report_rental_quotation_document</field>
+        <field name="report_file">property_lmg_custom.report_rental_quotation_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+        <field name="print_report_name">'Rental Proposal - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_rental_quotation_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <h5 style="text-align: center; font-weight: bold;">
+                            RENT PROPOSAL
+                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.property_type">
+                                (<span t-esc="doc.property_unit_product_id.property_type.capitalize()"/>)
+                            </t>
+                        </h5>
+
+                        <!-- CUSTOMER & SALES INFO -->
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                    Customer Information
+                                </h5>
+                                <div t-field="doc.partner_id"
+                                     t-options='{"widget": "contact", "fields": ["address", "name", "phone", "email"], "no_marker": True}'/>
+                            </div>
+                            <div class="col-6">
+                                <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                    Sales Information
+                                </h5>
+                                <table class="table table-sm table-borderless" style="font-size: 12px;">
+                                    <tr>
+                                        <td style="width: 35%;"><strong>Date:</strong></td>
+                                        <td><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Leasing Officer:</strong></td>
+                                        <td><span t-field="doc.user_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Address:</strong></td>
+                                        <td>
+                                            <span t-field="doc.company_id.street"/><br/>
+                                            <span t-if="doc.company_id.street2" t-field="doc.company_id.street2"/><br t-if="doc.company_id.street2"/>
+                                            <span t-field="doc.company_id.city"/>,
+                                            <span t-field="doc.company_id.state_id.name"/>
+                                            <span t-field="doc.company_id.zip"/><br/>
+                                            <span t-field="doc.company_id.country_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="doc.user_id.mobile">
+                                        <td><strong>Phone:</strong></td>
+                                        <td><span t-field="doc.user_id.mobile"/></td>
+                                    </tr>
+                                    <tr t-if="doc.user_id.email">
+                                        <td><strong>Email:</strong></td>
+                                        <td><span t-field="doc.user_id.email"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- RENT DETAILS -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Details
+                            </h5>
+
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
+                                <tbody>
+                                    <!-- Building Address Row -->
+                                    <t t-if="doc.property_unit_product_id">
+                                        <tr>
+                                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Address</strong></td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.company_id.street"/><br/>
+                                                <span t-if="doc.company_id.street2" t-field="doc.company_id.street2"/><br t-if="doc.company_id.street2"/>
+                                                <span t-field="doc.company_id.city"/>,
+                                                <span t-field="doc.company_id.state_id.name"/>
+                                                <span t-field="doc.company_id.zip"/><br/>
+                                                <span t-field="doc.company_id.country_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Building Name Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.name"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Unit Number Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.name"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Floor Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Floor</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.floor"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Area Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Area (sqm)</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.area"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Space Use Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Space Use</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id and doc.property_unit_product_id.space_use"
+                                                  t-esc="doc.property_unit_product_id.space_use.capitalize()"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Hand Over Condition Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Hand Over Condition</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.hand_over_condition_ids">
+                                                <t t-foreach="doc.property_unit_product_id.hand_over_condition_ids" t-as="cond">
+                                                    <div><span t-field="cond.name"/></div>
+                                                </t>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Rent Inclusions Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Inclusions</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.rent_inclusion_ids">
+                                                <t t-foreach="doc.property_unit_product_id.rent_inclusion_ids" t-as="incl">
+                                                    <span t-field="incl.name"/><br/>
+                                                </t>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Rent Exclusions Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Exclusions</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.rent_exclusion_ids">
+                                                <t t-foreach="doc.property_unit_product_id.rent_exclusion_ids" t-as="excl">
+                                                    <span t-field="excl.name"/><br/>
+                                                </t>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Move-in/Move-out Date Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Move-in/Move-out Date</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-esc="doc.rental_start_date.strftime('%B %d, %Y') if doc.rental_start_date else ''"/>
+                                            to
+                                            <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Rent Term Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Rent Term</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-esc="int(round(doc.duration_days / 30))"/> month(s)
+                                        </td>
+                                    </tr>
+
+                                    <!-- Product Attributes (e.g. bedroom count, furnished) -->
+                                    <t t-if="doc.property_unit_product_id">
+                                        <t t-foreach="doc.property_unit_product_id.product_template_attribute_value_ids" t-as="attr_value">
+                                            <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                                <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
+                                                    <strong>
+                                                        <span t-field="attr_value.attribute_id.name"/>
+                                                    </strong>
+                                                </td>
+                                                <td style="padding: 5px;">
+                                                    <span t-field="attr_value.name"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+
+                                    <!-- Requirements Before Move-in Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.requirements_before_movein">
+                                                <span t-esc="doc.property_unit_product_id.requirements_before_movein"/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- RENT RATE TABLE -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 30px;">
+                                Rent Rate
+                            </h5>
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6;">
+                                <thead>
+                                    <tr style="background-color: #f8f9fa; font-size: 12px;">
+                                        <th style="width: 40%; padding: 5px;">Description</th>
+                                        <th style="text-align: right; padding: 5px;">Unit Price</th>
+                                        <th style="text-align: right; padding: 5px;">Taxes</th>
+                                        <th style="text-align: right; padding: 5px;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
+                                            <td style="width: 40%; padding: 5px;">
+                                                <t t-set="desc_parts" t-value="line.name.split('\n')"/>
+                                                <div style="color: #494949ff; font-weight: bold;">
+                                                    <span t-esc="desc_parts[0]"/>
+                                                </div>
+                                                <t t-if="len(desc_parts) > 1">
+                                                    <t t-foreach="desc_parts[1:]" t-as="desc_line">
+                                                        <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
+                                                            <span t-esc="desc_line"/>
+                                                        </div>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_unit"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-esc="', '.join(line.tax_id.mapped('name')) if line.tax_id else '-'"/>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_subtotal"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <!-- TOTALS -->
+                            <div class="row justify-content-end mt-4">
+                                <div class="col-5">
+                                    <table class="table table-sm">
+                                        <tr style="font-size: 12px;">
+                                            <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                            <td class="text-end" style="padding: 4px;">
+                                                <span t-field="doc.amount_untaxed"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr style="font-size: 12px;">
+                                            <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                            <td class="text-end" style="padding: 4px;">
+                                                <span t-field="doc.amount_tax"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr style="font-size: 15px;">
+                                            <td style="padding: 6px;">
+                                                <span style="margin: 0; color: #875A7B;">Total:</span>
+                                            </td>
+                                            <td class="text-end" style="padding: 5px;">
+                                                <span style="margin: 0; color: #875A7B;">
+                                                    <span t-field="doc.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TERMS AND CONDITIONS -->
+                        <div style="page-break-inside: avoid; margin-top: 30px;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px;">
+                                Terms and Conditions
+                            </h5>
+                            <div style="font-size: 12px; padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; margin-top: 10px;">
+                                <div style="margin: 5px 0;">
+                                    <ol style="margin: 0 0 10px 18px; padding: 0;">
+                                        <li>Advance rent payment is non-refundable should the tenant not push through with unit rental.</li>
+                                        <li>There will be a 5% increment in the rental increase annually unless another agreement will be reached between tenant and lessee.</li>
+                                        <li>1 month non-payment of rent shall be subject for eviction.</li>
+                                        <li>Leasing officers are not allowed to accept any form of payments unless post-dated cheques.</li>
+                                        <li>Payments should be made only through authorized payment channels of Primaryhomes Inc.</li>
+                                    </ol>
+
+                                    <p style="margin: 0 0 6px 0;">Here are the official bank accounts of Primaryhomes Inc.</p>
+                                    <table class="table table-sm" style="font-size: 12px; margin-bottom: 10px; border: 1px solid #dee2e6;">
+                                        <thead>
+                                            <tr style="background-color: #ffffff;">
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Account Name</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Account Number</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Bank / Branch</th>
+                                                <th style="border: 1px solid #dee2e6; padding: 6px;">Swift Code</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">PRIMARYHOMES, INC</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">00-344-001571-2</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BDO – NORTH MANDAUE</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BNORPHMM</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">PRIMARYHOMES, INC</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">9101-0035-98</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BPI – MANALILI</td>
+                                                <td style="border: 1px solid #dee2e6; padding: 6px;">BOPIPHMM</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p style="margin: 0;">
+                                        Once payments have been made, kindly email your proof of payment to:
+                                        <br/>
+                                        <span style="font-weight: bold; font-size: 13px; color: #875A7B;">Rent@primaryhomes.com</span>
+                                        or
+                                        <span style="font-weight: bold; font-size: 13px; color: #875A7B;">gbsaquilon@primaryhomes.com</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SIGNATURE SECTION -->
+                        <section id="signature" name="Signature">
+                            <div class="row mt-4" name="signature">
+                                <div class="col-6">
+                                    <div style="text-align: center;">
+                                        <h5>Leasing Supervisor</h5>
+                                        <img src="/property_lmg_custom/static/img/Mabelle.png"
+                                             style="max-height: 5rem; max-width: 100%;"/>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> Lady Mabelle Dignadice <br/>
+                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div style="text-align: center;">
+                                        <h5>Operations Manager</h5>
+                                        <img src="/property_lmg_custom/static/img/Shai.png"
+                                             style="max-height: 5rem; max-width: 100%;"/>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> Michelle S. Cutang <br/>
+                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Client Signature -->
+                            <div class="row mt-4" t-if="doc.signature" name="client_signature">
+                                <div class="col-12">
+                                    <div style="text-align: center;">
+                                        <h5>Client Signature</h5>
+                                        <img t-att-src="image_data_uri(doc.signature)"
+                                             style="max-height: 3rem; max-width: 100%;"/>
+                                        <p style="margin-top: 5px;">
+                                            <strong>Name:</strong> <span t-field="doc.signed_by"/><br/>
+                                            <strong>Date:</strong> <span t-field="doc.signed_on" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_rental_quotation_document_no_layout">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="property_lmg_custom.report_rental_quotation_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================== -->
+    <!-- INVOICE TREE VIEW - ADD RENTAL FIELDS -->
+    <!-- ========================================== -->
+    <record id="view_invoice_tree_rental" model="ir.ui.view">
+        <field name="name">account.move.tree.rental</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Hidden field needed for visibility logic -->
+            <field name="name" position="before">
+                <field name="is_rental_invoice" column_invisible="1"/>
+            </field>
+
+            <!-- Rental Property Unit after name -->
+            <field name="name" position="after">
+                <field name="rental_property_unit_display"
+                       string="Property Unit"
+                       optional="show"
+                       invisible="not is_rental_invoice"/>
+                <field name="rental_period_display"
+                       string="Period"
+                       optional="show"
+                       invisible="not is_rental_invoice"/>
+            </field>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- INVOICE FORM VIEW - CUSTOMIZE FOR RENTAL -->
+    <!-- ========================================== -->
+    <record id="view_invoice_form_rental" model="ir.ui.view">
+        <field name="name">account.move.form.rental</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add hidden rental flag -->
+            <field name="partner_id" position="before">
+                <field name="is_rental_invoice" invisible="1"/>
+            </field>
+
+            <!-- Hide default Amount columns for rental invoices -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_subtotal']" position="attributes">
+                <attribute name="column_invisible">parent.is_rental_invoice</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_total']" position="attributes">
+                <attribute name="column_invisible">parent.is_rental_invoice</attribute>
+            </xpath>
+
+            <!-- Add Tax Amount, Base Amount, Total columns for rental invoices -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_subtotal']" position="after">
+                <field name="price_tax"
+                       string="Tax Amount"
+                       optional="show"
+                       invisible="not parent.is_rental_invoice"
+                       sum="Tax Total"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_total']" position="before">
+                <field name="price_subtotal"
+                       string="Base Amount"
+                       optional="show"
+                       invisible="not parent.is_rental_invoice"
+                       sum="Base Total"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_total']" position="after">
+                <field name="price_total"
+                       string="Total"
+                       optional="show"
+                       invisible="not parent.is_rental_invoice"
+                       sum="Total Amount"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

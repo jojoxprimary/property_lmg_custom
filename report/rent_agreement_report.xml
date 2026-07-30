@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Define the report action -->
     <record id="action_report_rent_agreement" model="ir.actions.report">
         <field name="name">Rent Agreement</field>
         <field name="model">sale.order</field>
@@ -13,26 +12,22 @@
         <field name="print_report_name">'Rent Agreement - %s' % (object.name)</field>
     </record>
 
-    <!-- Define the report template -->
     <template id="report_rent_agreement_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h5 style="text-align: center; font-weight: bold;">RESIDENTIAL RENT AGREEMENT</h5>
+                         <h5 style="text-align: center; font-weight: bold;">RESIDENTIAL RENT AGREEMENT</h5>
 
-                        <!-- Get the first order line (assuming rental property is always first or most relevant) -->
-                        <t t-set="property_line" t-value="doc.order_line[:1]"/>
-                        
-                        <!-- Section 1: Lessee Data -->
+                        <!-- Section 1: Lessee's Data -->
                         <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; margin-top: 20px;">
                             Lessee's Data
                         </h5>
-                        
+
                         <!-- New Account / Renewal Row -->
                         <table class="table table-sm" style="border: 1px solid #dee2e6; font-size: 12px; margin-top: -1px;">
                             <tbody>
-                                <tr style="border-bottom: 1px solid #e6dee4ff;">
+                                 <tr style="border-bottom: 1px solid #e6dee4ff;">
                                     <td style="padding: 5px;">
                                         <strong>[&#8195;] New Account</strong>
                                         <span style="margin-left: 50px;"><strong>[&#8195;] Renewal</strong></span>
@@ -40,8 +35,9 @@
                                 </tr>
                             </tbody>
                         </table>
+
                         <div class="row">
-                            <!-- Left Column -->
+                             <!-- Left Column -->
                             <div class="col-6">
                                 <table class="table table-sm" style="border: 1px solid #dee2e6; font-size: 12px">
                                     <tbody>
@@ -164,38 +160,40 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="height: 30px;">
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                </tr>
-                                <tr style="height: 30px;">
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                </tr>
-                                <tr style="height: 30px;">
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                </tr>
-                                <tr style="height: 30px;">
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                    <td style="padding: 5px;"></td>
-                                </tr>
+                                <t t-if="doc.occupant_ids">
+                                    <t t-foreach="doc.occupant_ids" t-as="occupant">
+                                        <tr style="height: 30px;">
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.surname"/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.first_name"/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.middle_name"/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.date_of_birth" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.relationship"/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="occupant.contact_number"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <tr style="height: 30px;">
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                        <td style="padding: 5px;"></td>
+                                    </tr>
+                                </t>
                             </tbody>
                         </table>
 
@@ -241,12 +239,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr style="height: 30px;">
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                        <td style="padding: 5px;"></td>
-                                    </tr>
+                                    <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.rent_inclusion_ids">
+                                        <tr style="height: 30px;">
+                                            <td style="padding: 5px;">
+                                                <t t-foreach="doc.property_unit_product_id.rent_inclusion_ids" t-as="incl">
+                                                    <span t-field="incl.name"/>
+                                                    <t t-if="!incl_last"><br/></t>
+                                                </t>
+                                            </td>
+                                            <td style="padding: 5px;"></td>
+                                            <td style="padding: 5px;"></td>
+                                            <td style="padding: 5px;"></td>
+                                        </tr>
+                                    </t>
+                                    <t t-else="">
+                                        <tr style="height: 30px;">
+                                            <td style="padding: 5px;"></td>
+                                            <td style="padding: 5px;"></td>
+                                            <td style="padding: 5px;"></td>
+                                            <td style="padding: 5px;"></td>
+                                        </tr>
+                                    </t>
                                 </tbody>
                             </table>
                         </div>
@@ -258,42 +271,85 @@
                             </h5>
                             <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
                                 <tbody>
-                                    <!-- Address Row -->
-                                    <tr>
-                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Address</strong></td>
-                                        <td style="padding: 5px;">
-                                            <t t-if="property_line and property_line.product_id.categ_id">
-                                                <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
-                                                <!-- Get the second part (index 1) if it exists, which should be the address -->
-                                                <span t-esc="address_parts[1].strip() if len(address_parts) > 1 else '-'"/>
-                                            </t>
-                                            <t t-else="">-</t>
-                                        </td>
-                                    </tr>
+                                    <!-- Building Address Row -->
+                                    <t t-if="doc.property_unit_product_id">
+                                        <tr>
+                                            <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Address</strong></td>
+                                            <td style="padding: 5px;">
+                                                <span t-field="doc.company_id.street"/><br/>
+                                                <span t-if="doc.company_id.street2" t-field="doc.company_id.street2"/><br t-if="doc.company_id.street2"/>
+                                                <span t-field="doc.company_id.city"/>,
+                                                <span t-field="doc.company_id.state_id.name"/>
+                                                <span t-field="doc.company_id.zip"/><br/>
+                                                <span t-field="doc.company_id.country_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </t>
 
                                     <!-- Building Name Row -->
                                     <tr>
                                         <td style="width: 30%; background-color: #f8f9fa;"><strong>Building Name</strong></td>
-                                        <td>
-                                            <t t-if="property_line and property_line.product_id.categ_id">
-                                                <!-- Get the third part (index 2) if it exists, which should be the building name -->
-                                                <t t-set="address_parts" t-value="property_line.product_id.categ_id.complete_name.split('/')"/>
-                                                <span t-esc="address_parts[2].strip() if len(address_parts) > 2 else property_line.product_id.categ_id.name"/>
-                                            </t>
-                                            <t t-else="">-</t>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.name"/>
+                                            <span t-else="">-</span>
                                         </td>
                                     </tr>
 
                                     <!-- Unit Number Row -->
                                     <tr>
                                         <td style="width: 30%; background-color: #f8f9fa;"><strong>Unit Number</strong></td>
-                                        <td>
-                                            <t t-if="property_line">
-                                                <span t-field="property_line.product_id.name"/>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.name"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Floor Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Floor</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.floor"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Area Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Area (sqm)</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id"
+                                                  t-field="doc.property_unit_product_id.area"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Space Use Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Space Use</strong></td>
+                                        <td style="padding: 5px;">
+                                            <span t-if="doc.property_unit_product_id and doc.property_unit_product_id.space_use"
+                                                  t-esc="doc.property_unit_product_id.space_use.capitalize()"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Hand Over Condition Row -->
+                                    <tr>
+                                        <td style="width: 30%; background-color: #f8f9fa;"><strong>Hand Over Condition</strong></td>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.hand_over_condition_ids">
+                                                <t t-foreach="doc.property_unit_product_id.hand_over_condition_ids" t-as="cond">
+                                                    <div><span t-field="cond.name"/></div>
+                                                </t>
                                             </t>
                                             <t t-else="">-</t>
                                         </td>
                                     </tr>
+
+                                    <!-- Move-in/Move-out Date Row -->
                                     <tr style="border-bottom: 1px solid #e6dee4ff;">
                                         <td style="width: 30%; padding: 5px;">
                                             <span style="color: #494949ff;">Move-in/Move-out Date</span>
@@ -304,6 +360,8 @@
                                             <span t-esc="doc.rental_return_date.strftime('%B %d, %Y') if doc.rental_return_date else ''"/>
                                         </td>
                                     </tr>
+
+                                    <!-- Rent Term Row -->
                                     <tr style="border-bottom: 1px solid #e6dee4ff;">
                                         <td style="width: 30%; padding: 5px;">
                                             <span style="color: #494949ff;">Rent Term</span>
@@ -312,10 +370,10 @@
                                             <span t-esc="int(round(doc.duration_days / 30))"/> month(s)
                                         </td>
                                     </tr>
-        
-                                    <!-- Loop through product attributes -->
-                                    <t t-if="property_line and property_line.product_id">
-                                        <t t-foreach="property_line.product_id.product_template_attribute_value_ids" t-as="attr_value">
+
+                                    <!-- Product Attributes -->
+                                    <t t-if="doc.property_unit_product_id">
+                                        <t t-foreach="doc.property_unit_product_id.product_template_attribute_value_ids" t-as="attr_value">
                                             <tr style="border-bottom: 1px solid #e6dee4ff;">
                                                 <td style="width: 30%; padding: 8px; background-color: #f8f9fa;">
                                                     <strong>
@@ -329,99 +387,99 @@
                                         </t>
                                     </t>
 
-                                    <!-- Requirements Row -->
+                                    <!-- Requirements Before Move-in Row -->
                                     <tr>
                                         <td style="width: 30%; background-color: #f8f9fa;"><strong>Requirements Before Move-in</strong></td>
-                                        <td>
-                                            <t t-if="property_line">
-                                                <span t-field="property_line.product_id.description"/>
+                                        <td style="padding: 5px;">
+                                            <t t-if="doc.property_unit_product_id and doc.property_unit_product_id.requirements_before_movein">
+                                                <span t-esc="doc.property_unit_product_id.requirements_before_movein"/>
                                             </t>
                                             <t t-else="">-</t>
                                         </td>
                                     </tr>
-
                                 </tbody>
                             </table>
                         </div>
 
-                    <!-- Section 6: Rent Rate -->
-<div style="page-break-inside: avoid;">
-    <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
-        Rent Rate
-    </h5>
-    <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
-        <thead>
-            <tr style="background-color: #f8f9fa; font-size: 12px;">
-                <th style="width: 40%; padding: 5px;">Description</th>
-                <th style="text-align: right; padding: 5px;">Unit Price</th>
-                <th style="text-align: right; padding: 5px;">Taxes</th>
-                <th style="text-align: right; padding: 5px;">Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            <t t-foreach="doc.order_line" t-as="line">
-                <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
-                    <td style="width: 40%; padding: 5px;">
-                        <t t-set="desc_parts" t-value="line.name.split('\n')"/>
-                        <div style="color: #494949ff; font-weight: bold;">
-                            <span t-esc="desc_parts[0]"/>
+                        <!-- Section 6: Rent Rate -->
+                        <div style="page-break-inside: avoid;">
+                            <h5 style="color: #875A7B; border-bottom: 2px solid #875A7B; padding-bottom: 5px; margin-top: 20px;">
+                                Rent Rate
+                            </h5>
+                            <table class="table table-sm mt-3" style="border: 1px solid #dee2e6; font-size: 12px">
+                                <thead>
+                                    <tr style="background-color: #f8f9fa; font-size: 12px;">
+                                        <th style="width: 40%; padding: 5px;">Description</th>
+                                        <th style="text-align: right; padding: 5px;">Unit Price</th>
+                                        <th style="text-align: right; padding: 5px;">Taxes</th>
+                                        <th style="text-align: right; padding: 5px;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr style="border-bottom: 1px solid #e6dee4ff; font-size: 12px;">
+                                            <td style="width: 40%; padding: 5px;">
+                                                <t t-set="desc_parts" t-value="line.name.split('\n')"/>
+                                                <div style="color: #494949ff; font-weight: bold;">
+                                                    <span t-esc="desc_parts[0]"/>
+                                                </div>
+                                                <t t-if="len(desc_parts) > 1">
+                                                    <t t-foreach="desc_parts[1:]" t-as="desc_line">
+                                                        <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
+                                                            <span t-esc="desc_line"/>
+                                                        </div>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_unit"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-esc="', '.join(line.tax_id.mapped('name')) if line.tax_id else '-'"/>
+                                            </td>
+                                            <td style="padding: 5px; text-align: right;">
+                                                <span t-field="line.price_subtotal"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
                         </div>
-                        <t t-if="len(desc_parts) > 1">
-                            <t t-foreach="desc_parts[1:]" t-as="desc_line">
-                                <div style="color: #666666; font-style: oblique; font-size: 11px; margin-top: 3px;">
-                                    <span t-esc="desc_line"/>
-                                </div>
-                            </t>
-                        </t>
-                    </td>
-                    <td style="padding: 5px; text-align: right;">
-                        <span t-field="line.price_unit"
-                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </td>
-                    <td style="padding: 5px; text-align: right;">
-                        <span t-esc="', '.join(line.tax_id.mapped('name')) if line.tax_id else '-'"/>
-                    </td>
-                    <td style="padding: 5px; text-align: right;">
-                        <span t-field="line.price_subtotal"
-                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </td>
-                </tr>
-            </t>
-        </tbody>
-    </table>
-</div>
 
-<div class="row justify-content-end mt-4">
-    <div class="col-5">
-        <table class="table table-sm">
-            <tr style="font-size: 12px;">
-                <td style="padding: 4px;"><strong>Subtotal:</strong></td>
-                <td class="text-end" style="padding: 4px;">
-                    <span t-field="doc.amount_untaxed"
-                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                </td>
-            </tr>
-            <tr style="font-size: 12px;">
-                <td style="padding: 4px;"><strong>Taxes:</strong></td>
-                <td class="text-end" style="padding: 4px;">
-                    <span t-field="doc.amount_tax"
-                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                </td>
-            </tr>
-            <tr style="font-size: 15px;">
-                <td style="padding: 6px;">
-                    <span style="margin: 0; color: #875A7B;">Total:</span>
-                </td>
-                <td class="text-end" style="padding: 5px;">
-                    <span style="margin: 0; color: #875A7B;">
-                        <span t-field="doc.amount_total"
-                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </span>
-                </td>
-            </tr>
-        </table>
-    </div>
-</div>
+                        <!-- TOTALS -->
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-5">
+                                <table class="table table-sm">
+                                    <tr style="font-size: 12px;">
+                                        <td style="padding: 4px;"><strong>Subtotal:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_untaxed"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 12px;">
+                                        <td style="padding: 4px;"><strong>Taxes:</strong></td>
+                                        <td class="text-end" style="padding: 4px;">
+                                            <span t-field="doc.amount_tax"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 15px;">
+                                        <td style="padding: 6px;">
+                                            <span style="margin: 0; color: #875A7B;">Total:</span>
+                                        </td>
+                                        <td class="text-end" style="padding: 5px;">
+                                            <span style="margin: 0; color: #875A7B;">
+                                                <span t-field="doc.amount_total"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
 
                         <!-- Section 7: Terms and Conditions -->
                         <div class="mt-4" style="background-color: #f8f9fa; padding: 20px; border-left: 5px solid #875A7B; border-radius: 5px;">
@@ -433,22 +491,22 @@
                                     The LESSEE agrees to pay the above mentioned total Monthly Rental Due at the office of the LESSOR on or before the day specified above.
                                 </li>
                                 <li>
-                                    The Advance Rental shall be delivered by the LESSEE seven (7) working days prior to the comencement of this contract and shall be applied to the last month (s) of the lease term, however, not refundable upon the voluntay cancellation or pre - termination by the LESSEE. 
+                                    The Advance Rental shall be delivered by the LESSEE seven (7) working days prior to the comencement of this contract and shall be applied to the last month (s) of the lease term, however, not refundable upon the voluntay cancellation or pre - termination by the LESSEE.
                                 </li>
                                 <li>
-                                    The  Security Deposit shall be equivalent to the above mentioned monthly rental rate, which shall answer the cost of repairs and restoration of damages in the premises caused by the negligence and willful act of the LESSEE and other monetary obligations resulting from the LESSEE's violation of any of the terms and conditions of this contract. The amount shall be refundable or of any balance thereof, within 60 days from the Termination of the Contract. The LESSEE's liability for any breach and/or violation committed is no way limited to the said Security Deposit. 
+                                    The  Security Deposit shall be equivalent to the above mentioned monthly rental rate, which shall answer the cost of repairs and restoration of damages in the premises caused by the negligence and willful act of the LESSEE and other monetary obligations resulting from the LESSEE's violation of any of the terms and conditions of this contract. The amount shall be refundable or of any balance thereof, within 60 days from the Termination of the Contract. The LESSEE's liability for any breach and/or violation committed is no way limited to the said Security Deposit.
                                 </li>
                                 <li>
-                                    The room/unit is deemed occupied upon full payment of the required advance rental and security deposit. The Right to Hold the room/unit belongs to the LESSOR when the LESSEE fails or neglects to pay the rent. Upon expiration of the lease period or failure to pay the rent, the LESSOR has the right to LEASE the room/unit to any incoming prospective lessees. 
+                                    The room/unit is deemed occupied upon full payment of the required advance rental and security deposit. The Right to Hold the room/unit belongs to the LESSOR when the LESSEE fails or neglects to pay the rent. Upon expiration of the lease period or failure to pay the rent, the LESSOR has the right to LEASE the room/unit to any incoming prospective lessees.
                                 </li>
                                 <li>
-                                    A 4.00 % Surchage shall be added per month for payment of rental made after the agreed due date. It is expressly agreed and understood that the payment of the rental herein stipulated shall be made without the necessity of express demand and without delay on any ground whatsoever. The interest shall continue until full settlement has been finally made. 
+                                    A 4.00 % Surchage shall be added per month for payment of rental made after the agreed due date. It is expressly agreed and understood that the payment of the rental herein stipulated shall be made without the necessity of express demand and without delay on any ground whatsoever. The interest shall continue until full settlement has been finally made.
                                 </li>
                                 <li>
                                     The LESSEE shall pay for and defray at its Exclusive Expense, the Consumption of water, electricity, and other utilities in the Leased Premises.
                                 </li>
                                 <li>
-                                    The LESSEE shall NOT make any Alterations to the room, unit or building without prior written consent from the LESSOR. This includes, but not limited to, painting, repainting, carpentry works, and other related alterations.  The cost of any alteration or improvement shall be the exclusive account and at the expense of the LESSEE. 
+                                    The LESSEE shall NOT make any Alterations to the room, unit or building without prior written consent from the LESSOR. This includes, but not limited to, painting, repainting, carpentry works, and other related alterations.  The cost of any alteration or improvement shall be the exclusive account and at the expense of the LESSEE.
                                 </li>
                                 <li>
                                     The LESSEE shall use the rented room/unit for Residential purpose only. The LESSEE shall be responsible for the proper use and upkeep of the appliances/ equipment, furniture, fixtures, and other items, and of the entire rented room/unit, including its sanitation and hygiene. Any damages/lost/infestation caused by the negligence or omission of the LESSEE, the cost of repairs, or replacement, or pest control shall be the exclusive account and the expense of the LESSEE.
@@ -457,22 +515,22 @@
                                     The LESSEE may choose to Renew this Contract through a written request for Renewal at least thirty (30) working days prior to its expiration, subject to the approval of the LESSOR, which approval shall not be withheld unduly without reasonable and just cause. In this case, the LESSEE cannot use the  ___2__month(s)  security deposit as monthly payment.
                                 </li>
                                 <li>
-                                    In the event that the LESSEE Pre- terminates this rent agreement before the term expires, the LESSEE is obliged to pay the monthly rental(s) for the remaining period of this agreement, and shall forefeit the advance rental and security deposit entirely in favor of  Primary Homes, Inc. 
+                                    In the event that the LESSEE Pre- terminates this rent agreement before the term expires, the LESSEE is obliged to pay the monthly rental(s) for the remaining period of this agreement, and shall forefeit the advance rental and security deposit entirely in favor of  Primary Homes, Inc.
                                 </li>
                                 <li>
-                                    The LESSEE agrees that the room/ unit rented shall be occupied ONLY by him/her, or as specified Occupant in this Agreement.  If the LESSEE or Occupant of the unit desires to share, or let other person(s) occupy the room/unit, besides himself/herself, the LESSEE must SECURE CONSENT of the LESSOR in writing or electronic mail at least five (5) working days prior to the guest's stay.  
+                                    The LESSEE agrees that the room/ unit rented shall be occupied ONLY by him/her, or as specified Occupant in this Agreement.  If the LESSEE or Occupant of the unit desires to share, or let other person(s) occupy the room/unit, besides himself/herself, the LESSEE must SECURE CONSENT of the LESSOR in writing or electronic mail at least five (5) working days prior to the guest's stay.
                                 </li>
                                 <li>
                                     The LESSEE shall not Assign or Sublease the room/unit without written permission from the LESSOR.
                                 </li>
                                 <li>
-                                    Further extension is chargeable for a month's rent. Should the LESSEE Hold-over and remain to occupy the room/ unit after the expiration of the rental term with or without consent of the LESSOR, shall not be considered as renewal or extension until a rental agreement has been signed. In the meantime, Any Extension of Stay beyond 12:00 noon shall be charged accordingly. The LESSEE shall continue to pay his/her existing monthly rentals subject to possible adjustments based on the rental rates in the new agreement.  
+                                    Further extension is chargeable for a month's rent. Should the LESSEE Hold-over and remain to occupy the room/ unit after the expiration of the rental term with or without consent of the LESSOR, shall not be considered as renewal or extension until a rental agreement has been signed. In the meantime, Any Extension of Stay beyond 12:00 noon shall be charged accordingly. The LESSEE shall continue to pay his/her existing monthly rentals subject to possible adjustments based on the rental rates in the new agreement.
                                 </li>
                                 <li>
                                     The LESSOR or any of it its agent/representative together with a witness, with or without the presence of the Occupant Resident/ Lessee, shall have the right to enter the room or unit for purposes of Inspection.
                                 </li>
                                 <li>
-                                    The LESSEE shall be responsible for any Damages caused to the premises/ building due to his/her negligence or omission. The cost of the damage SHALL be deductible from the Security Deposit. Once 50% of the Security Deposit is consumed, the LESSEE shall pay the remaining 50% to ensure that the Secuirty Deposit shall be equal to the original amount.  
+                                    The LESSEE shall be responsible for any Damages caused to the premises/ building due to his/her negligence or omission. The cost of the damage SHALL be deductible from the Security Deposit. Once 50% of the Security Deposit is consumed, the LESSEE shall pay the remaining 50% to ensure that the Secuirty Deposit shall be equal to the original amount.
                                 </li>
                                 <li>
                                     The LESSOR shall not be held liable for any loss of personal items inside his/her respective room/ unit, and within the building premises due to theft or his/her negligence or omission.
@@ -492,53 +550,50 @@
                                 <li>
                                     Upon signing of this rent agreement, the LESSEE hereby agrees to pay the required advance rent and security deposit and further agrees to abide the terms and conditions, and the  house rules and any amendments thereto.
                                 </li>
-
-
-
                             </ol>
                         </div>
 
+                        <!-- SIGNATURE SECTION -->
+                        <section id="signature" name="Signature">
+                            <div class="row mt-2" name="signature">
+                                <!-- Company Representatives Column (Left) -->
+                                <div class="col-6">
+                                    <!-- Leasing Supervisor -->
+                                    <div style="text-align: center; margin-bottom: 20px;">
+                                        <h5 style="margin-bottom: 5px;">Leasing Supervisor</h5>
+                                        <img src="/property_lmg_custom/static/img/Mabelle.png"
+                                             style="max-height: 8rem; max-width: 100%;"/>
+                                        <p style="margin-top: 2px; margin-bottom: 5px;">
+                                            <strong>Name:</strong> Lady Mabelle Dignadice <br/>
+                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
 
-                    <section id="signature" name="Signature">
-                        <div class="row mt-2" name="signature">
-                            <!-- Company Representatives Column (Left) -->
-                            <div class="col-6">
-                                <!-- Leasing Supervisor -->
-                                <div style="text-align: center; margin-bottom: 20px;">
-                                    <h5 style="margin-bottom: 5px;">Leasing Supervisor</h5>
-                                    <img src="/property_lmg_custom/static/img/Mabelle.png" 
-                                        style="max-height: 8rem; max-width: 100%;"/>
-                                    <p style="margin-top: 2px; margin-bottom: 5px;">
-                                        <strong>Name:</strong> Lady Mabelle Dignadice <br/>
-                                        <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
-                                    </p>
+                                    <!-- Operations Manager -->
+                                    <div style="text-align: center;">
+                                        <h5 style="margin-bottom: 5px;">Operations Manager</h5>
+                                        <img src="/property_lmg_custom/static/img/Shai.png"
+                                             style="max-height: 5rem; max-width: 100%;"/>
+                                        <p style="margin-top: 2px; margin-bottom: 5px;">
+                                            <strong>Name:</strong> Michelle S. Cutang <br/>
+                                            <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                                        </p>
+                                    </div>
                                 </div>
-                                
-                                <!-- Operations Manager -->
-                                <div style="text-align: center;">
-                                    <h5 style="margin-bottom: 5px;">Operations Manager</h5>
-                                    <img src="/property_lmg_custom/static/img/Shai.png" 
-                                        style="max-height: 5rem; max-width: 100%;"/>
-                                    <p style="margin-top: 2px; margin-bottom: 5px;">
-                                        <strong>Name:</strong> Michelle S. Cutang <br/>
-                                        <strong>Date:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
-                                    </p>
+
+                                <!-- Client Signature Column (Right) -->
+                                <div class="col-6">
+                                    <div style="text-align: center;">
+                                        <h5 style="margin-bottom: 5px;">Client Signature</h5>
+                                        <div style="border-bottom: 1px solid #000; height: 2.5rem; margin: 5px auto; max-width: 80%;"></div>
+                                        <p style="margin-top: 15px; margin-bottom: 5px;">
+                                            <strong>Name:</strong> _______________________<br/>
+                                            <strong>Date:</strong> _______________________
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <!-- Client Signature Column (Right) -->
-                            <div class="col-6">
-                                <div style="text-align: center;">
-                                    <h5 style="margin-bottom: 5px;">Client Signature</h5>
-                                    <div style="border-bottom: 1px solid #000; height: 2.5rem; margin: 5px auto; max-width: 80%;"></div>
-                                    <p style="margin-top: 15px; margin-bottom: 5px;">
-                                        <strong>Name:</strong> _______________________<br/>
-                                        <strong>Date:</strong> _______________________
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                        </section>
 
                     </div>
                 </t>

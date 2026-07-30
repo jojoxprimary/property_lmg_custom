@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <function model="ir.model.data" name="write">
+            <function model="ir.model.data" name="search">
+                <value eval="[('module', '=', 'property_lmg_custom'), ('name', '=', 'mail_template_rental_proposal')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record id="mail_template_rental_proposal" model="mail.template">
+            <field name="name">Rental Proposal Template</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Rental Proposal {{ object.name }} - {{ object.property_unit_display_name or object.property_unit_product_id.name or 'Property' }} - Confirmation Required</field>
+            <field name="email_from">{{ 'Primary Homes Incorporated &lt;noreply@theprimarygroup.com.ph&gt;' }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.partner_id.name or ''">Customer</t>,
+        <br/><br/>
+        We are pleased to present your rental proposal <strong t-out="object.name or ''">SO00X</strong>.
+        <br/><br/>
+        Property: <strong><t t-out="object.property_unit_display_name or object.property_unit_product_id.name or '-'">Unit</t></strong>
+        <br/><br/>
+        Please review the attached proposal and sign to proceed.
+        <br/><br/>
+        If you have any questions, please don't hesitate to contact us.
+        <br/><br/>
+        Best regards,<br/>
+        Primary Homes Incorporated
+    </p>
+</div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('property_lmg_custom.action_report_rental_quotation'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

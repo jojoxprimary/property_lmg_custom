@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Advance Rent -->
+        <record id="product_advance_rent" model="product.product">
+            <field name="name">Advance Rent</field>
+            <field name="default_code">ADVANCE_RENT</field>
+            <field name="type">service</field>
+            <field name="rent_ok">False</field>
+            <field name="list_price">0.00</field>
+        </record>
+
+        <!-- Security Deposit -->
+        <record id="product_security_deposit" model="product.product">
+            <field name="name">Security Deposit</field>
+            <field name="default_code">SECURITY_DEPOSIT</field>
+            <field name="type">service</field>
+            <field name="rent_ok">False</field>
+            <field name="list_price">0.00</field>
+        </record>
+
+        <!-- CUSA -->
+        <record id="product_cusa" model="product.product">
+            <field name="name">CUSA</field>
+            <field name="default_code">CUSA</field>
+            <field name="type">service</field>
+            <field name="rent_ok">False</field>
+            <field name="list_price">0.00</field>
+        </record>
+
+        <!-- Other Charges -->
+        <record id="product_other_charges" model="product.product">
+            <field name="name">Other Charges</field>
+            <field name="default_code">OTHER_CHARGES</field>
+            <field name="type">service</field>
+            <field name="rent_ok">False</field>
+            <field name="list_price">0.00</field>
+        </record>
+    </data>
+</odoo>

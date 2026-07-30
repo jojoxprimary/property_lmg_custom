@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <function model="ir.model.data" name="write">
+            <function model="ir.model.data" name="search">
+                <value eval="[('module', '=', 'property_lmg_custom'), ('name', '=', 'mail_template_rental_rejection')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record id="mail_template_rental_rejection" model="mail.template">
+            <field name="name">Rental: Quotation Rejected</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Rental Quotation {{ object.name }} - Rejected</field>
+            <field name="email_from">{{ 'Primary Homes Incorporated &lt;noreply@theprimarygroup.com.ph&gt;' }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p>Hello <t t-out="object.submitted_by_id.name">User</t>,</p>
+    <p>
+        Your rental quotation <strong><t t-out="object.name">SO001</t></strong>
+        for customer <strong><t t-out="object.partner_id.name">Customer Name</t></strong>
+        has been rejected.
+    </p>
+    <p>
+        Please review the quotation and make any necessary changes before resubmitting.
+    </p>
+    <p style="margin-top: 16px;">
+        <a t-att-href="object.get_base_url() + '/odoo/rental/' + str(object.id)"
+           style="background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
+            View Quotation
+        </a>
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

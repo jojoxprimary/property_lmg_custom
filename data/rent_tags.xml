@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Rent Inclusions -->
+        <record id="rent_inclusion_electricity" model="rent_inclusion">
+            <field name="name">Electricity</field>
+        </record>
+        <record id="rent_inclusion_water" model="rent_inclusion">
+            <field name="name">Water</field>
+        </record>
+        <record id="rent_inclusion_internet" model="rent_inclusion">
+            <field name="name">Internet</field>
+        </record>
+        <record id="rent_inclusion_cusa" model="rent_inclusion">
+            <field name="name">CUSA</field>
+        </record>
+        <record id="rent_inclusion_parking" model="rent_inclusion">
+            <field name="name">Parking Slot</field>
+        </record>
+
+        <!-- Rent Exclusions -->
+        <record id="rent_exclusion_electricity" model="rent_exclusion">
+            <field name="name">Electricity</field>
+        </record>
+        <record id="rent_exclusion_water" model="rent_exclusion">
+            <field name="name">Water</field>
+        </record>
+        <record id="rent_exclusion_internet" model="rent_exclusion">
+            <field name="name">Internet</field>
+        </record>
+        <record id="rent_exclusion_cusa" model="rent_exclusion">
+            <field name="name">CUSA</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <function model="ir.model.data" name="write">
+            <function model="ir.model.data" name="search">
+                <value eval="[('module', '=', 'property_lmg_custom'), ('name', '=', 'mail_template_rental_client_thank_you')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        <record id="mail_template_rental_client_thank_you" model="mail.template">
+            <field name="name">Rental: Client Thank You</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Thank you for confirming {{ object.name }} - {{ object.property_unit_display_name or object.property_unit_product_id.name or '-' }}</field>
+            <field name="email_from">{{ 'Primary Homes Incorporated &lt;noreply@theprimarygroup.com.ph&gt;' }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Dear <t t-out="object.partner_id.name or ''">Customer</t>,
+        <br/><br/>
+        Thank you for confirming and signing your rental quotation <strong t-out="object.name or ''">S00014</strong>.
+        <br/><br/>
+        Property: <strong><t t-out="object.property_unit_display_name or object.property_unit_product_id.name or '-'">Unit</t></strong>
+        <br/><br/>
+        Our team will proceed with the next steps and contact you if anything else is needed.
+        <br/><br/>
+        Best regards,<br/>
+        Primary Homes Incorporated
+    </p>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

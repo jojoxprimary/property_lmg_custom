@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================== -->
+    <!-- SALE ORDER FORM - MAIN CUSTOMIZATIONS -->
+    <!-- ========================================== -->
+    <record id="view_sale_order_form_custom" model="ir.ui.view">
+        <field name="name">sale.order.form.custom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+
+            <!-- ========================================== -->
+            <!-- HIDDEN UTILITY FIELDS -->
+            <!-- ========================================== -->
+            <field name="partner_id" position="before">
+                <field name="is_rental_order" invisible="1"/>
+                <field name="is_rental_user_only" invisible="1"/>
+                <field name="pending_count" invisible="1"/>
+                <field name="has_non_rental_to_invoice" invisible="1"/>
+                <field name="can_invoice_next_period" invisible="1"/>
+                <field name="is_for_manager_review" invisible="1"/>
+            </field>
+
+            <!-- ========================================== -->
+            <!-- AGENT FIELD ABOVE SALESPERSON -->
+            <!-- ========================================== -->
+            <field name="user_id" position="attributes">
+                <attribute name="string">Leasing Officer</attribute>
+            </field>
+            <field name="user_id" position="after">
+                <field name="agent_id" string="Agent" placeholder="Select Agent..."
+                       invisible="not is_rental_order"/>
+            </field>
+
+            <!-- ========================================== -->
+            <!-- STATE FIELDS - CUSTOM STATUSBAR -->
+            <!-- ========================================== -->
+            <field name="state" position="attributes">
+                <attribute name="statusbar_visible">draft,to_approve,sent,sale</attribute>
+            </field>
+
+            <!-- ========================================== -->
+            <!-- HEADER BUTTONS - CUSTOM WORKFLOW -->
+            <!-- ========================================== -->
+
+            <!-- Submit for Review (draft state, rental orders only) -->
+            <button name="action_confirm" position="before">
+                <button name="action_submit_for_review"
+                        string="Submit for Review"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state != 'draft' or not is_rental_order"
+                        confirm="Are you sure you want to submit this rental proposal for review?"/>
+
+                <!-- Approve (manager only, to_approve state) -->
+                <button name="action_approve"
+                        string="Approve"
+                        type="object"
+                        class="btn-success"
+                        invisible="state != 'to_approve' or not is_rental_order"
+                        groups="property_lmg_custom.group_rental_manager"/>
+
+                <!-- Reject (manager only, to_approve state) -->
+                <button name="action_reject"
+                        string="Reject"
+                        type="object"
+                        class="btn-danger"
+                        invisible="state != 'to_approve' or not is_rental_order"
+                        groups="property_lmg_custom.group_rental_manager"
+                        confirm="Are you sure you want to reject this rental proposal?"/>
+
+                <!-- Download Contract (sale state, rental orders) -->
+                <button name="action_download_contract"
+                        string="Download Contract"
+                        type="object"
+                        class="btn"
+                        invisible="state != 'sale' or not is_rental_order"/>
+
+                <!-- Invoice Next Period (rental orders with invoiceable periods) -->
+                <button name="action_invoice_next_period"
+                        string="Invoice Period"
+                        type="object"
+                        class="btn"
+                        invisible="not is_rental_order or state != 'sale' or not can_invoice_next_period"/>
+            </button>
+
+            <!-- Hide original Send by Email -->
+            <button name="action_quotation_send" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+
+            <!-- Restore Send by Email for non-rental orders -->
+            <button name="action_quotation_send" position="after">
+                <button name="action_quotation_send"
+                        string="Send by Email"
+                        type="object"
+                        class="btn-primary"
+                        invisible="is_rental_order"
+                        context="{'proforma': False}"/>
+            </button>
+
+            <!-- Confirm button: restrict for non-managers, visible for managers on rental -->
+            <button name="action_confirm" position="attributes">
+                <attribute name="invisible">is_rental_order and not is_rental_user_only</attribute>
+            </button>
+
+            <!-- ========================================== -->
+            <!-- RENTAL PICKUP/OCCUPY RENAMES -->
+            <!-- ========================================== -->
+            <button name="action_open_pickup" position="attributes">
+                <attribute name="string">Occupy</attribute>
+                <attribute name="class">btn-primary</attribute>
+            </button>
+
+            <button name="action_open_return" position="attributes">
+                <attribute name="string">Checkout</attribute>
+                <attribute name="class">btn-primary</attribute>
+            </button>
+
+            <!-- ========================================== -->
+            <!-- PARTNER ID READONLY -->
+            <!-- ========================================== -->
+            <field name="partner_id" position="attributes">
+                <attribute name="domain">[('is_company', '=', True)]</attribute>
+            </field>
+
+            <!-- ========================================== -->
+            <!-- DURATION - REPLACE duration_days WITH duration_months -->
+            <!-- ========================================== -->
+            <field name="duration_days" position="replace">
+                <label for="duration_months" string="Duration (months)" invisible="not is_rental_order"/>
+                <div name="duration_block" invisible="not is_rental_order">
+                    <field name="duration_months" class="oe_inline" style="max-width: 4rem"/>
+                    <span> months </span>
+                </div>
+                <label for="duration_days" string="Duration (days)" invisible="is_rental_order"/>
+                <field name="duration_days" class="oe_inline" style="max-width: 4rem" invisible="is_rental_order"/>
+            </field>
+
+            <!-- Update Rental Prices button near duration -->
+            <field name="rental_return_date" position="after">
+                <button name="action_update_rental_prices"
+                        string="Update Rental Prices"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not is_rental_order or state not in ('draft', 'to_approve')"/>
+            </field>
+
+            <!-- Readonly restrictions handled at model level via write() override -->
+
+            <!-- ========================================== -->
+            <!-- BADGE RENAMES -->
+            <!-- ========================================== -->
+            <xpath expr="//div[hasclass('badge')][contains(text(), 'Picked-up')]" position="attributes">
+                <attribute name="t-out"/>
+                <attribute name="class" add="d-none" separator=" "/>
+            </xpath>
+
+            <!-- Waiting for Client Signature badge -->
+            <div name="button_box" position="after">
+                <div name="waiting_signature_pill"
+                     class="float-end badge rounded-pill fw-bold text-bg-info"
+                     invisible="state != 'sent'">
+                    Waiting for Client Signature
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- EFFECTIVE DATETIME FIELDS -->
+            <!-- ========================================== -->
+            <field name="rental_start_date" position="after">
+                <field name="effective_occupy_datetime"
+                       string="Effective Occupy Date"
+                       invisible="not is_rental_order or state != 'sale'"/>
+                <field name="effective_checkout_datetime"
+                       string="Effective Checkout Date"
+                       invisible="not is_rental_order or state != 'sale'"/>
+            </field>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- ORDER LINE CUSTOMIZATIONS -->
+    <!-- ========================================== -->
+    <record id="view_sale_order_form_order_line" model="ir.ui.view">
+        <field name="name">sale.order.form.order.line.custom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="21"/>
+        <field name="arch" type="xml">
+
+            <!-- Order line tree: hide Quantity, Delivered, Returned for rental; add Duration, Monthly Price -->
+            <xpath expr="//field[@name='order_line']/list" position="inside">
+                <field name="is_property_unit_line" invisible="1"/>
+                <field name="duration" string="Duration (months)"
+                       optional="show"
+                       invisible="not parent.is_rental_order"/>
+                <field name="monthly_price" string="Monthly Price"
+                       optional="show"
+                       invisible="not parent.is_rental_order"
+                       sum="Monthly Total"/>
+                <field name="price_tax" string="Tax Amount"
+                       optional="show"
+                       invisible="not parent.is_rental_order"
+                       sum="Tax Total"/>
+                <field name="price_subtotal" string="Base Amount"
+                       optional="show"
+                       invisible="not parent.is_rental_order"
+                       sum="Base Total"/>
+                <field name="price_total" string="Total"
+                       optional="show"
+                       invisible="not parent.is_rental_order"
+                       sum="Total Amount"/>
+            </xpath>
+
+            <!-- Hide Quantity column for rental orders -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="column_invisible">not context.get('show_rental_quantity', False)</attribute>
+            </xpath>
+
+            <!-- Hide Delivered column for rental orders -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='qty_delivered']" position="attributes">
+                <attribute name="column_invisible">parent.is_rental_order</attribute>
+            </xpath>
+
+            <!-- Hide Returned column for rental orders -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='qty_returned']" position="attributes">
+                <attribute name="column_invisible">parent.is_rental_order</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- PERSONS TO OCCUPY TAB PAGE -->
+    <!-- ========================================== -->
+    <record id="view_sale_order_form_occupants_tab" model="ir.ui.view">
+        <field name="name">sale.order.form.occupants.tab</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="22"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Person to Occupy"
+                      invisible="not is_rental_order or state != 'sale'"
+                      name="occupants_tab">
+                    <field name="occupant_ids">
+                        <list editable="bottom">
+                            <field name="surname" required="1"/>
+                            <field name="first_name"/>
+                            <field name="middle_name"/>
+                            <field name="date_of_birth"/>
+                            <field name="relationship"/>
+                            <field name="contact_number"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- KANBAN VIEW - PROPERTY UNIT INFO -->
+    <!-- ========================================== -->
+    <record id="view_rental_order_kanban_custom" model="ir.ui.view">
+        <field name="name">rental.order.kanban.custom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_renting.rental_order_view_kanban"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='has_rented_products']" position="after">
+                <field name="property_unit_display_name"/>
+            </xpath>
+
+            <xpath expr="//div[hasclass('d-flex')]" position="after">
+                <div class="text-muted small mb-1" t-if="record.property_unit_display_name.raw_value">
+                    <i class="fa fa-building-o me-1" title="Property Unit"/>
+                    <field name="property_unit_display_name"/>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ========================================== -->
+    <!-- RENTAL OCCUPANT TREE VIEW (standalone) -->
+    <!-- ========================================== -->
+    <record id="view_rental_occupant_tree" model="ir.ui.view">
+        <field name="name">rental.occupant.tree</field>
+        <field name="model">rental.occupant</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="surname" required="1"/>
+                <field name="first_name"/>
+                <field name="middle_name"/>
+                <field name="date_of_birth"/>
+                <field name="relationship"/>
+                <field name="contact_number"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rental_occupant_form" model="ir.ui.view">
+        <field name="name">rental.occupant.form</field>
+        <field name="model">rental.occupant</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="surname" required="1"/>
+                        <field name="first_name"/>
+                        <field name="middle_name"/>
+                        <field name="date_of_birth"/>
+                    </group>
+                    <group>
+                        <field name="relationship"/>
+                        <field name="contact_number"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+
+
+
+
+</odoo>
